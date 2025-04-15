@@ -1,5 +1,7 @@
 using UnityEngine;
-
+# if UNITY_EDITOR
+using UnityEditor;
+#endif
 namespace Solarville.Spacetime
 {
     /// <summary>
@@ -43,7 +45,7 @@ namespace Solarville.Spacetime
 
             // Add player controller script
             PlayerController playerController = player.AddComponent<PlayerController>();
-
+#if UNITY_EDITOR
             // Optional - Add reference to the model
             SerializedProperty modelProperty = new SerializedObject(playerController).FindProperty("playerModel");
             if (modelProperty != null)
@@ -51,14 +53,16 @@ namespace Solarville.Spacetime
                 modelProperty.objectReferenceValue = playerModel.transform;
             }
 
+
             SerializedProperty rendererProperty = new SerializedObject(playerController).FindProperty("playerModelRenderer");
             if (rendererProperty != null)
             {
                 rendererProperty.objectReferenceValue = renderer;
             }
-
+#endif
             Debug.Log("Player prefab created. You should save it manually in the editor.");
             playerPrefab = player;
+
         }
     }
 }

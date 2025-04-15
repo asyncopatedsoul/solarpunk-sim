@@ -81,6 +81,8 @@ namespace Solarville.Spacetime
             // Disable the connect button to prevent multiple clicks
             if (connectButton != null)
                 connectButton.interactable = false;
+
+            //gameManager.ConnectToSpacetimeDB();
         }
     }
 }

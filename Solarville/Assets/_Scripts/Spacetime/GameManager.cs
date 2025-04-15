@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using SpacetimeDB;
 using SpacetimeDB.Types;
 using UnityEngine;
+
 
 namespace Solarville.Spacetime
 {
@@ -10,7 +13,7 @@ namespace Solarville.Spacetime
     {
         [Header("Spacetime DB Configuration")]
         [SerializeField] private string serverUrl = "http://127.0.0.1:3000";
-        [SerializeField] private string moduleName = "solarville_server";
+        [SerializeField] private string moduleName = "solarville";
 
         [Header("Player Settings")]
         [SerializeField] private GameObject playerPrefab;
@@ -47,7 +50,7 @@ namespace Solarville.Spacetime
             ConnectToSpacetimeDB();
         }
 
-        private void ConnectToSpacetimeDB()
+        public void ConnectToSpacetimeDB()
         {
             Debug.Log("Connecting to SpacetimeDB...");
 
@@ -67,6 +70,8 @@ namespace Solarville.Spacetime
 
             // Connect to the server
             Conn = builder.Build();
+
+            Debug.Log(Conn);
         }
 
         private void HandleConnect(DbConnection conn, Identity identity, string token)
@@ -147,7 +152,8 @@ namespace Solarville.Spacetime
         {
             if (!Players.TryGetValue(player.PlayerId, out var playerController))
             {
-                var playerObject = Instantiate(Instance.playerPrefab, Instance.playersContainer);
+                var playerObject = Instantiate(Instance.playerPrefab, Instance.playersContainer, true);
+                playerObject.transform.position = Vector3.zero;
                 playerController = playerObject.GetComponent<PlayerController>();
                 playerController.Initialize(player);
                 Players.Add(player.PlayerId, playerController);
@@ -207,5 +213,12 @@ namespace Solarville.Spacetime
         {
             Disconnect();
         }
+
+
     }
+}
+
+namespace System.Runtime.CompilerServices
+{
+    internal static class IsExternalInit { }
 }

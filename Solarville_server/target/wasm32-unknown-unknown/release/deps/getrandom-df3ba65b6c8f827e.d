@@ -1,0 +1,10 @@
+/Users/michael.garrido/Documents/GitHub/solarpunk-sim/Solarville_server/target/wasm32-unknown-unknown/release/deps/libgetrandom-df3ba65b6c8f827e.rmeta: /Users/michael.garrido/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.15/src/lib.rs /Users/michael.garrido/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.15/src/error.rs /Users/michael.garrido/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.15/src/util.rs /Users/michael.garrido/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.15/src/error_impls.rs
+
+/Users/michael.garrido/Documents/GitHub/solarpunk-sim/Solarville_server/target/wasm32-unknown-unknown/release/deps/libgetrandom-df3ba65b6c8f827e.rlib: /Users/michael.garrido/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.15/src/lib.rs /Users/michael.garrido/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.15/src/error.rs /Users/michael.garrido/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.15/src/util.rs /Users/michael.garrido/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.15/src/error_impls.rs
+
+/Users/michael.garrido/Documents/GitHub/solarpunk-sim/Solarville_server/target/wasm32-unknown-unknown/release/deps/getrandom-df3ba65b6c8f827e.d: /Users/michael.garrido/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.15/src/lib.rs /Users/michael.garrido/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.15/src/error.rs /Users/michael.garrido/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.15/src/util.rs /Users/michael.garrido/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.15/src/error_impls.rs
+
+/Users/michael.garrido/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.15/src/lib.rs:
+/Users/michael.garrido/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.15/src/error.rs:
+/Users/michael.garrido/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.15/src/util.rs:
+/Users/michael.garrido/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.15/src/error_impls.rs:

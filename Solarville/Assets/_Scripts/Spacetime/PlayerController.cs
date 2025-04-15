@@ -1,5 +1,5 @@
 using System;
-using SpacetimeDB;
+using SpacetimeDB.Types;
 using UnityEngine;
 
 namespace Solarville.Spacetime

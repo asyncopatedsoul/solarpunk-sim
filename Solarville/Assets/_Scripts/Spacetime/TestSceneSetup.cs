@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Solarville.Spacetime
 {
@@ -67,7 +70,7 @@ namespace Solarville.Spacetime
                 TMP_InputField nameInput = uiObject.GetComponentInChildren<TMP_InputField>();
                 Button connectButton = uiObject.GetComponentInChildren<Button>();
                 TextMeshProUGUI statusText = uiObject.GetComponentInChildren<TextMeshProUGUI>();
-                
+#if UNITY_EDITOR
                 if (networkManager && nameInput && connectButton && statusText)
                 {
                     var serializedObject = new SerializedObject(networkManager);
@@ -77,8 +80,9 @@ namespace Solarville.Spacetime
                     serializedObject.FindProperty("gameManager").objectReferenceValue = gameManager;
                     serializedObject.ApplyModifiedProperties();
                 }
+#endif
             }
-            
+#if UNITY_EDITOR
             // Link player prefab to game manager
             if (gameManager && playerPrefab)
             {
@@ -87,7 +91,7 @@ namespace Solarville.Spacetime
                 serializedObject.FindProperty("playersContainer").objectReferenceValue = playerContainer.transform;
                 serializedObject.ApplyModifiedProperties();
             }
-            
+#endif
             Debug.Log("Test scene setup complete!");
         }
         

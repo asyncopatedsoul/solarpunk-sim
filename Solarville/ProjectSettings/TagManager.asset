@@ -8,26 +8,31 @@ TagManager:
   - WallRun
   - Climb
   - Fly
-  - Vehicle
-  - Wheel
-  - Animal
+  - Ice
   - Water
+  - Grass
+  - Ledge
+  - Honey
+  - Mud
+  - Boost
+  - WallSlide
+  - JumpDown
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - PostProcessing
+  - 
   - Water
   - UI
-  - Player
-  - Character
   - 
-  - Floor
   - 
-  - Wall
-  - Soil
-  - HardFloor
-  - WaterWall
+  - One Way Platform
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
   - BodyPart
   - 
   - 
@@ -48,7 +53,4 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
-    locked: 0
-  - name: UI
-    uniqueID: 795361297
     locked: 0

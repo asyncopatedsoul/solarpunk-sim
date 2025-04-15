@@ -1,0 +1,1 @@
+/Users/michael.garrido/Documents/GitHub/solarpunk-sim/Solarville_server/target/wasm32-unknown-unknown/release/solarville_server.wasm: /Users/michael.garrido/Documents/GitHub/solarpunk-sim/Solarville_server/src/lib.rs /Users/michael.garrido/Documents/GitHub/solarpunk-sim/Solarville_server/src/math.rs

@@ -1,8 +1,9 @@
 pub mod math;
 
 use math::DbVector3;
-use rand::Rng;
-use spacetimedb::{spacetimedb_lib::ScheduleAt, Identity, ReducerContext, Table};
+// use rand::Rng;
+// use spacetimedb::{spacetimedb_lib::ScheduleAt, Identity, ReducerContext, Table};
+use spacetimedb::{spacetimedb_lib::ScheduleAt, Identity, ReducerContext, Table, Timestamp, TimeDuration};
 
 #[spacetimedb::table(name = world_config, public)]
 pub struct WorldConfig {
@@ -12,6 +13,8 @@ pub struct WorldConfig {
 }
 
 #[spacetimedb::table(name = player, public)]
+#[spacetimedb::table(name = logged_out_player)]
+#[derive(Debug, Clone)]
 pub struct Player {
     #[primary_key]
     pub identity: Identity,
@@ -52,6 +55,23 @@ pub fn init(ctx: &ReducerContext) -> Result<(), String> {
 #[spacetimedb::reducer(client_connected)]
 pub fn connect(ctx: &ReducerContext) -> Result<(), String> {
     log::info!("Client connected: {:?}", ctx.sender);
+
+    if let Some(player) = ctx.db.logged_out_player().identity().find(&ctx.sender) {
+        ctx.db.player().insert(player.clone());
+        ctx.db
+            .logged_out_player()
+            .identity()
+            .delete(&player.identity);
+    } else {
+        ctx.db.player().try_insert(Player {
+            identity: ctx.sender,
+            player_id: 0,
+            name: String::new(),
+            position: DbVector3::new(0.0, 0.0, 0.0),
+            rotation: DbVector3::new(0.0, 0.0, 0.0),
+            last_update: ctx.timestamp,
+        })?;
+    }
     Ok(())
 }
 
@@ -79,7 +99,7 @@ pub fn register_player(ctx: &ReducerContext, name: String, position: DbVector3, 
         player.rotation = rotation;
         player.last_update = ctx.timestamp;
         ctx.db.player().identity().update(player);
-        log::info!("Updated existing player: {}", name);
+        // log::info!("Updated existing player: {}", name);
     } else {
         // Create a new player
         ctx.db.player().try_insert(Player {
