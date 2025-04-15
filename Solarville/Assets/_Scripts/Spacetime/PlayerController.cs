@@ -94,9 +94,9 @@ namespace Solarville.Spacetime
         private void HandleLocalPlayerMovement()
         {
             // Calculate movement direction
-            float horizontalInput = Input.GetAxis("Horizontal");
-            float verticalInput = Input.GetAxis("Vertical");
-
+            float horizontalInput = Input.GetAxis("Movement X");
+            float verticalInput = Input.GetAxis("Movement Y");
+             
             // Move relative to camera's forward direction
             Vector3 forward = Camera.main.transform.forward;
             Vector3 right = Camera.main.transform.right;
