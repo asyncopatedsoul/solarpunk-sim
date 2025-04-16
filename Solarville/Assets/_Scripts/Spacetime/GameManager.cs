@@ -13,11 +13,14 @@ namespace Solarville.Spacetime
     {
         [Header("Spacetime DB Configuration")]
         [SerializeField] private string serverUrl = "http://127.0.0.1:3000";
-        [SerializeField] private string moduleName = "solarville";
+        [SerializeField] private string moduleName = "solarville_server";
 
         [Header("Player Settings")]
         [SerializeField] private GameObject playerPrefab;
         [SerializeField] private Transform playersContainer;
+        
+        [Header("Microprocessor Settings")]
+        [SerializeField] private MicroprocessorManager microprocessorManager;
 
         // Events
         public static event Action OnConnected;
