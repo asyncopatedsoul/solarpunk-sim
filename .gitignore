@@ -1,0 +1,15 @@
+# Rust build artifacts
+/target/
+
+# Debug artifacts
+**/*.rs.bk
+*.pdb
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+.DS_Store
+
+# Generated documentation
+/doc/
