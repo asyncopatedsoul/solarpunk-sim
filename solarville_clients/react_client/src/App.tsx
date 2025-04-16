@@ -1,19 +1,21 @@
-// import { useState } from 'react'
 import React, { useEffect, useState } from 'react';
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import reactLogo from './assets/react.svg';
+import viteLogo from '/vite.svg';
+import './App.css';
 
-import { DbConnection, ErrorContext, EventContext, Player } from './module_bindings';
+import { DbConnection, ErrorContext, MicroprocessCode, MicroprocessState } from './module_bindings';
 import { Identity } from '@clockworklabs/spacetimedb-sdk';
+import ReplInterface from './components/ReplInterface';
 
 function App() {
   console.log('App.tsx loaded');
-  const [count, setCount] = useState(0)
-
+  
   const [connected, setConnected] = useState<boolean>(false);
   const [identity, setIdentity] = useState<Identity | null>(null);
   const [conn, setConn] = useState<DbConnection | null>(null);
+  const [microprocessCodes, setMicroprocessCodes] = useState<MicroprocessCode[]>([]);
+  const [microprocessStates, setMicroprocessStates] = useState<MicroprocessState[]>([]);
+  const [selectedTab, setSelectedTab] = useState<'repl' | 'codes'>('repl');
 
   useEffect(() => {
     const subscribeToQueries = (conn: DbConnection, queries: string[]) => {
@@ -43,11 +45,48 @@ function App() {
         'Connected to SpacetimeDB with identity:',
         identity.toHexString()
       );
-      // conn.reducers.onSendMessage(() => {
-      //   console.log('Message sent.');
-      // });
 
-      subscribeToQueries(conn, ['SELECT * FROM message', 'SELECT * FROM user']);
+      // Subscribe to our tables
+      subscribeToQueries(conn, [
+        'SELECT * FROM microprocess_code', 
+        'SELECT * FROM microprocess_state'
+      ]);
+
+      // Set up listeners for our tables
+      conn.tables.microprocess_code.onInsert((code) => {
+        console.log('Microprocess code inserted:', code);
+        setMicroprocessCodes(prev => [...prev, code]);
+      });
+
+      conn.tables.microprocess_code.onUpdate((oldCode, newCode) => {
+        console.log('Microprocess code updated:', newCode);
+        setMicroprocessCodes(prev => 
+          prev.map(code => code.code_id === newCode.code_id ? newCode : code)
+        );
+      });
+
+      conn.tables.microprocess_code.onDelete((code) => {
+        console.log('Microprocess code deleted:', code);
+        setMicroprocessCodes(prev => 
+          prev.filter(c => c.code_id !== code.code_id)
+        );
+      });
+
+      conn.tables.microprocess_state.onInsert((state) => {
+        console.log('Microprocess state inserted:', state);
+        setMicroprocessStates(prev => [...prev, state]);
+      });
+
+      conn.tables.microprocess_state.onUpdate((oldState, newState) => {
+        console.log('Microprocess state updated:', newState);
+        setMicroprocessStates(prev => 
+          prev.map(state => state.code_id === newState.code_id ? newState : state)
+        );
+      });
+
+      // Initialize the local state with existing data
+      setMicroprocessCodes(conn.tables.microprocess_code.filter(() => true));
+      setMicroprocessStates(conn.tables.microprocess_state.filter(() => true));
     };
 
     const onDisconnect = () => {
@@ -71,30 +110,250 @@ function App() {
     );
   }, []);
 
+  // Styles for the app
+  const styles = {
+    container: {
+      maxWidth: '1000px',
+      margin: '0 auto',
+      padding: '20px',
+    },
+    header: {
+      display: 'flex',
+      alignItems: 'center',
+      marginBottom: '20px',
+    },
+    logo: {
+      height: '40px',
+      marginRight: '10px',
+    },
+    title: {
+      fontSize: '24px',
+      margin: 0,
+    },
+    connectionStatus: {
+      marginLeft: 'auto',
+      padding: '5px 10px',
+      borderRadius: '4px',
+      fontSize: '14px',
+      color: 'white',
+      backgroundColor: connected ? '#4CAF50' : '#f44336',
+    },
+    tabs: {
+      display: 'flex',
+      marginBottom: '20px',
+      borderBottom: '1px solid #ccc',
+    },
+    tab: {
+      padding: '10px 20px',
+      cursor: 'pointer',
+      borderBottom: '2px solid transparent',
+    },
+    activeTab: {
+      borderBottom: '2px solid #2196F3',
+      fontWeight: 'bold',
+    },
+    codeList: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+      gap: '15px',
+    },
+    codeCard: {
+      border: '1px solid #ccc',
+      borderRadius: '4px',
+      padding: '15px',
+      backgroundColor: '#f9f9f9',
+    },
+    codeHeader: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: '10px',
+    },
+    codeName: {
+      margin: 0,
+      fontSize: '18px',
+      fontWeight: 'bold',
+    },
+    codeButtons: {
+      display: 'flex',
+      gap: '5px',
+    },
+    runButton: {
+      padding: '5px 10px',
+      backgroundColor: '#4CAF50',
+      color: 'white',
+      border: 'none',
+      borderRadius: '4px',
+      cursor: 'pointer',
+    },
+    stopButton: {
+      padding: '5px 10px',
+      backgroundColor: '#f44336',
+      color: 'white',
+      border: 'none',
+      borderRadius: '4px',
+      cursor: 'pointer',
+    },
+    editButton: {
+      padding: '5px 10px',
+      backgroundColor: '#2196F3',
+      color: 'white',
+      border: 'none',
+      borderRadius: '4px',
+      cursor: 'pointer',
+    },
+    codeStatus: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      marginTop: '10px',
+      fontSize: '14px',
+      color: '#666',
+    },
+    running: {
+      color: '#4CAF50',
+      fontWeight: 'bold',
+    },
+    stopped: {
+      color: '#f44336',
+    },
+    noScripts: {
+      textAlign: 'center' as const,
+      padding: '20px',
+      color: '#666',
+    },
+  };
+
+  // Function to start a microprocess
+  const startMicroprocess = async (codeId: number) => {
+    if (!conn) return;
+    
+    try {
+      await conn.reducers.start_microprocess(codeId);
+      console.log(`Started microprocess ${codeId}`);
+    } catch (error) {
+      console.error('Error starting microprocess:', error);
+    }
+  };
+
+  // Function to stop a microprocess
+  const stopMicroprocess = async (codeId: number) => {
+    if (!conn) return;
+    
+    try {
+      await conn.reducers.stop_microprocess(codeId);
+      console.log(`Stopped microprocess ${codeId}`);
+    } catch (error) {
+      console.error('Error stopping microprocess:', error);
+    }
+  };
+
+  // Render microprocess code list
+  const renderCodeList = () => {
+    if (microprocessCodes.length === 0) {
+      return (
+        <div style={styles.noScripts}>
+          <p>No scripts available. Create one in the REPL tab!</p>
+        </div>
+      );
+    }
+
+    return (
+      <div style={styles.codeList}>
+        {microprocessCodes.map(code => {
+          const state = microprocessStates.find(s => s.code_id === code.code_id);
+          const isRunning = state?.is_running || false;
+          
+          return (
+            <div key={code.code_id} style={styles.codeCard}>
+              <div style={styles.codeHeader}>
+                <h3 style={styles.codeName}>{code.name}</h3>
+                <div style={styles.codeButtons}>
+                  {!isRunning ? (
+                    <button 
+                      style={styles.runButton}
+                      onClick={() => startMicroprocess(code.code_id)}
+                    >
+                      Run
+                    </button>
+                  ) : (
+                    <button 
+                      style={styles.stopButton}
+                      onClick={() => stopMicroprocess(code.code_id)}
+                    >
+                      Stop
+                    </button>
+                  )}
+                </div>
+              </div>
+              
+              <pre style={{ 
+                maxHeight: '100px', 
+                overflow: 'auto', 
+                backgroundColor: '#f0f0f0',
+                padding: '5px',
+                fontSize: '12px'
+              }}>
+                {code.code_content.length > 200 
+                  ? `${code.code_content.substring(0, 200)}...` 
+                  : code.code_content}
+              </pre>
+              
+              <div style={styles.codeStatus}>
+                <span style={isRunning ? styles.running : styles.stopped}>
+                  {isRunning ? 'Running' : 'Stopped'}
+                </span>
+                {state && (
+                  <span>
+                    L: {state.left_motor_speed.toFixed(1)} | 
+                    R: {state.right_motor_speed.toFixed(1)}
+                  </span>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div style={styles.container}>
+      <div style={styles.header}>
+        <img src={reactLogo} style={styles.logo} alt="React logo" />
+        <h1 style={styles.title}>Solarville Microprocess Manager</h1>
+        <div style={styles.connectionStatus}>
+          {connected ? 'Connected' : 'Disconnected'}
+        </div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+
+      <div style={styles.tabs}>
+        <div 
+          style={{
+            ...styles.tab,
+            ...(selectedTab === 'repl' ? styles.activeTab : {})
+          }}
+          onClick={() => setSelectedTab('repl')}
+        >
+          Python REPL
+        </div>
+        <div 
+          style={{
+            ...styles.tab,
+            ...(selectedTab === 'codes' ? styles.activeTab : {})
+          }}
+          onClick={() => setSelectedTab('codes')}
+        >
+          Saved Scripts ({microprocessCodes.length})
+        </div>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+
+      {selectedTab === 'repl' ? (
+        <ReplInterface dbConnection={conn} height="500px" />
+      ) : (
+        renderCodeList()
+      )}
+    </div>
+  );
 }
 
-export default App
+export default App;
