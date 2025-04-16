@@ -4,10 +4,11 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import { fileURLToPath } from 'url';
+import { initializeReplServer, getActiveSessions, closeSession } from './repl.js';
 
 // Configuration
 const SERVER_URL = 'http://127.0.0.1:3000';
-const MODULE_NAME = 'solarville';
+const MODULE_NAME = 'solarville_server';
 const POLLING_INTERVAL_MS = 1000; // How often to check for new code to run
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,6 +16,7 @@ const __dirname = path.dirname(__filename);
 // State
 const runningProcesses = new Map(); // Map of code_id to { process, tempFile } objects
 let spacetimeClient = null;
+let replServer = null;
 
 // Setup temp directory for Python scripts
 const TEMP_DIR = path.join(os.tmpdir(), 'solarville-microprocessor');
@@ -162,6 +164,7 @@ function startPythonProcess(code) {
 import sys
 import json
 import time
+import traceback
 
 # Add the directory of the script to Python's path so it can be imported
 sys.path.append('${TEMP_DIR}')
@@ -207,7 +210,18 @@ try:
     # Main loop if it exists
     if 'loop' in globals():
         while True:
-            loop()
+            try:
+                loop()
+            except Exception as e:
+                error_state = {
+                    "left_motor_speed": 0.0,
+                    "right_motor_speed": 0.0,
+                    "error": str(e)
+                }
+                print(json.dumps(error_state), flush=True)
+                traceback.print_exc()
+                time.sleep(1)  # Wait before retrying
+            
             time.sleep(0.1)  # Run loop at 10Hz
     else:
         # If no loop function, just keep the process alive
@@ -223,6 +237,7 @@ except Exception as e:
         "error": str(e)
     }
     print(json.dumps(error_state), flush=True)
+    traceback.print_exc()
     sys.exit(1)
 `;
     
@@ -241,8 +256,8 @@ except Exception as e:
         // Update state in SpacetimeDB
         spacetimeClient.reducers.update_microprocess_state(
           code.code_id,
-          state.left_motor_speed,
-          state.right_motor_speed,
+          state.left_motor_speed || 0.0,
+          state.right_motor_speed || 0.0,
           state.error || "",
           true
         );
@@ -490,26 +505,30 @@ async function stopPythonFile(codeId) {
 // Main function to initialize the client
 async function main() {
   console.log('Starting Solarville Microprocessor Client...');
-  
+
+  // Start REPL server
+  replServer = initializeReplServer();
+  console.log('REPL server started');
+
   // Connect to SpacetimeDB
   await initializeSpacetimeClient();
-  
+
   // Handle process exit
   process.on('SIGINT', async () => {
     console.log('Shutting down...');
     stopAllPythonProcesses();
     process.exit(0);
   });
-  
+
   // Example usage from command line args
   if (process.argv.length > 2) {
     const command = process.argv[2];
-    
+
     if (command === 'save' && process.argv.length > 5) {
       const name = process.argv[3];
       const filePath = process.argv[4];
       const content = fs.readFileSync(process.argv[5], 'utf8');
-      
+
       const codeId = await savePythonFile(name, filePath, content);
       if (codeId) {
         console.log(`Saved file with code_id: ${codeId}`);
@@ -520,11 +539,25 @@ async function main() {
     } else if (command === 'stop' && process.argv.length > 3) {
       const codeId = parseInt(process.argv[3]);
       await stopPythonFile(codeId);
+    } else if (command === 'repl-status') {
+      // Show status of REPL sessions
+      console.log('Active REPL Sessions:');
+      console.log(getActiveSessions());
+    } else if (command === 'repl-close' && process.argv.length > 3) {
+      // Close a specific REPL session
+      const sessionId = process.argv[3];
+      if (closeSession(sessionId)) {
+        console.log(`Closed REPL session: ${sessionId}`);
+      } else {
+        console.log(`Session not found: ${sessionId}`);
+      }
     } else {
       console.log('Usage:');
-      console.log('  save <name> <path> <file>   - Save a Python file to SpacetimeDB');
-      console.log('  start <code_id>            - Start a Python file');
-      console.log('  stop <code_id>             - Stop a Python file');
+      console.log('  save <name> <path> <file> - Save a Python file to SpacetimeDB');
+      console.log('  start <code_id>          - Start a Python file');
+      console.log('  stop <code_id>           - Stop a Python file');
+      console.log('  repl-status              - Show active REPL sessions');
+      console.log('  repl-close <session_id>  - Close a specific REPL session');
     }
   }
 }
@@ -536,5 +569,7 @@ main().catch(console.error);
 export {
   savePythonFile,
   startPythonFile,
-  stopPythonFile
+  stopPythonFile,
+  getActiveSessions,
+  closeSession
 };

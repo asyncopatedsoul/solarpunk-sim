@@ -42,6 +42,14 @@ import { UpdatePlayerPosition } from "./update_player_position_reducer.ts";
 export { UpdatePlayerPosition };
 import { UpdatePlayerPositions } from "./update_player_positions_reducer.ts";
 export { UpdatePlayerPositions };
+import { SaveMicroprocessCode } from "./save_microprocess_code_reducer.ts";
+export { SaveMicroprocessCode };
+import { StartMicroprocess } from "./start_microprocess_reducer.ts";
+export { StartMicroprocess };
+import { StopMicroprocess } from "./stop_microprocess_reducer.ts";
+export { StopMicroprocess };
+import { UpdateMicroprocessState } from "./update_microprocess_state_reducer.ts";
+export { UpdateMicroprocessState };
 
 // Import and reexport all table handle types
 import { LoggedOutPlayerTableHandle } from "./logged_out_player_table.ts";
@@ -52,6 +60,10 @@ import { UpdatePlayerTimerTableHandle } from "./update_player_timer_table.ts";
 export { UpdatePlayerTimerTableHandle };
 import { WorldConfigTableHandle } from "./world_config_table.ts";
 export { WorldConfigTableHandle };
+import { MicroprocessCodeTableHandle } from "./microprocess_code_table.ts";
+export { MicroprocessCodeTableHandle };
+import { MicroprocessStateTableHandle } from "./microprocess_state_table.ts";
+export { MicroprocessStateTableHandle };
 
 // Import and reexport all types
 import { DbVector3 } from "./db_vector_3_type.ts";
@@ -62,6 +74,10 @@ import { UpdatePlayerTimer } from "./update_player_timer_type.ts";
 export { UpdatePlayerTimer };
 import { WorldConfig } from "./world_config_type.ts";
 export { WorldConfig };
+import { MicroprocessCode } from "./microprocess_code_type.ts";
+export { MicroprocessCode };
+import { MicroprocessState } from "./microprocess_state_type.ts";
+export { MicroprocessState };
 
 const REMOTE_MODULE = {
   tables: {
@@ -85,6 +101,16 @@ const REMOTE_MODULE = {
       rowType: WorldConfig.getTypeScriptAlgebraicType(),
       primaryKey: "id",
     },
+    microprocess_code: {
+      tableName: "microprocess_code",
+      rowType: MicroprocessCode.getTypeScriptAlgebraicType(),
+      primaryKey: "code_id",
+    },
+    microprocess_state: {
+      tableName: "microprocess_state",
+      rowType: MicroprocessState.getTypeScriptAlgebraicType(),
+      primaryKey: "state_id",
+    },
   },
   reducers: {
     connect: {
@@ -106,6 +132,22 @@ const REMOTE_MODULE = {
     update_player_positions: {
       reducerName: "update_player_positions",
       argsType: UpdatePlayerPositions.getTypeScriptAlgebraicType(),
+    },
+    save_microprocess_code: {
+      reducerName: "save_microprocess_code",
+      argsType: SaveMicroprocessCode.getTypeScriptAlgebraicType(),
+    },
+    start_microprocess: {
+      reducerName: "start_microprocess",
+      argsType: StartMicroprocess.getTypeScriptAlgebraicType(),
+    },
+    stop_microprocess: {
+      reducerName: "stop_microprocess",
+      argsType: StopMicroprocess.getTypeScriptAlgebraicType(),
+    },
+    update_microprocess_state: {
+      reducerName: "update_microprocess_state",
+      argsType: UpdateMicroprocessState.getTypeScriptAlgebraicType(),
     },
   },
   // Constructors which are used by the DbConnectionImpl to
@@ -139,6 +181,10 @@ export type Reducer = never
 | { name: "RegisterPlayer", args: RegisterPlayer }
 | { name: "UpdatePlayerPosition", args: UpdatePlayerPosition }
 | { name: "UpdatePlayerPositions", args: UpdatePlayerPositions }
+| { name: "SaveMicroprocessCode", args: SaveMicroprocessCode }
+| { name: "StartMicroprocess", args: StartMicroprocess }
+| { name: "StopMicroprocess", args: StopMicroprocess }
+| { name: "UpdateMicroprocessState", args: UpdateMicroprocessState }
 ;
 
 export class RemoteReducers {
@@ -208,6 +254,70 @@ export class RemoteReducers {
     this.connection.offReducer("update_player_positions", callback);
   }
 
+  saveMicroprocessCode(name: string, file_path: string, code_content: string) {
+    const __args = { name, file_path, code_content };
+    let __writer = new BinaryWriter(1024);
+    SaveMicroprocessCode.getTypeScriptAlgebraicType().serialize(__writer, __args);
+    let __argsBuffer = __writer.getBuffer();
+    this.connection.callReducer("save_microprocess_code", __argsBuffer, this.setCallReducerFlags.saveMicroprocessCodeFlags);
+  }
+
+  onSaveMicroprocessCode(callback: (ctx: ReducerEventContext, name: string, file_path: string, code_content: string) => void) {
+    this.connection.onReducer("save_microprocess_code", callback);
+  }
+
+  removeOnSaveMicroprocessCode(callback: (ctx: ReducerEventContext, name: string, file_path: string, code_content: string) => void) {
+    this.connection.offReducer("save_microprocess_code", callback);
+  }
+
+  startMicroprocess(code_id: number) {
+    const __args = { code_id };
+    let __writer = new BinaryWriter(1024);
+    StartMicroprocess.getTypeScriptAlgebraicType().serialize(__writer, __args);
+    let __argsBuffer = __writer.getBuffer();
+    this.connection.callReducer("start_microprocess", __argsBuffer, this.setCallReducerFlags.startMicroprocessFlags);
+  }
+
+  onStartMicroprocess(callback: (ctx: ReducerEventContext, code_id: number) => void) {
+    this.connection.onReducer("start_microprocess", callback);
+  }
+
+  removeOnStartMicroprocess(callback: (ctx: ReducerEventContext, code_id: number) => void) {
+    this.connection.offReducer("start_microprocess", callback);
+  }
+
+  stopMicroprocess(code_id: number) {
+    const __args = { code_id };
+    let __writer = new BinaryWriter(1024);
+    StopMicroprocess.getTypeScriptAlgebraicType().serialize(__writer, __args);
+    let __argsBuffer = __writer.getBuffer();
+    this.connection.callReducer("stop_microprocess", __argsBuffer, this.setCallReducerFlags.stopMicroprocessFlags);
+  }
+
+  onStopMicroprocess(callback: (ctx: ReducerEventContext, code_id: number) => void) {
+    this.connection.onReducer("stop_microprocess", callback);
+  }
+
+  removeOnStopMicroprocess(callback: (ctx: ReducerEventContext, code_id: number) => void) {
+    this.connection.offReducer("stop_microprocess", callback);
+  }
+
+  updateMicroprocessState(code_id: number, left_motor_speed: number, right_motor_speed: number, error_message: string, is_running: boolean) {
+    const __args = { code_id, left_motor_speed, right_motor_speed, error_message, is_running };
+    let __writer = new BinaryWriter(1024);
+    UpdateMicroprocessState.getTypeScriptAlgebraicType().serialize(__writer, __args);
+    let __argsBuffer = __writer.getBuffer();
+    this.connection.callReducer("update_microprocess_state", __argsBuffer, this.setCallReducerFlags.updateMicroprocessStateFlags);
+  }
+
+  onUpdateMicroprocessState(callback: (ctx: ReducerEventContext, code_id: number, left_motor_speed: number, right_motor_speed: number, error_message: string, is_running: boolean) => void) {
+    this.connection.onReducer("update_microprocess_state", callback);
+  }
+
+  removeOnUpdateMicroprocessState(callback: (ctx: ReducerEventContext, code_id: number, left_motor_speed: number, right_motor_speed: number, error_message: string, is_running: boolean) => void) {
+    this.connection.offReducer("update_microprocess_state", callback);
+  }
+
 }
 
 export class SetReducerFlags {
@@ -226,6 +336,25 @@ export class SetReducerFlags {
     this.updatePlayerPositionsFlags = flags;
   }
 
+  saveMicroprocessCodeFlags: CallReducerFlags = 'FullUpdate';
+  saveMicroprocessCode(flags: CallReducerFlags) {
+    this.saveMicroprocessCodeFlags = flags;
+  }
+
+  startMicroprocessFlags: CallReducerFlags = 'FullUpdate';
+  startMicroprocess(flags: CallReducerFlags) {
+    this.startMicroprocessFlags = flags;
+  }
+
+  stopMicroprocessFlags: CallReducerFlags = 'FullUpdate';
+  stopMicroprocess(flags: CallReducerFlags) {
+    this.stopMicroprocessFlags = flags;
+  }
+
+  updateMicroprocessStateFlags: CallReducerFlags = 'FullUpdate';
+  updateMicroprocessState(flags: CallReducerFlags) {
+    this.updateMicroprocessStateFlags = flags;
+  }
 }
 
 export class RemoteTables {
@@ -245,6 +374,14 @@ export class RemoteTables {
 
   get worldConfig(): WorldConfigTableHandle {
     return new WorldConfigTableHandle(this.connection.clientCache.getOrCreateTable<WorldConfig>(REMOTE_MODULE.tables.world_config));
+  }
+
+  get microprocessCode(): MicroprocessCodeTableHandle {
+    return new MicroprocessCodeTableHandle(this.connection.clientCache.getOrCreateTable<MicroprocessCode>(REMOTE_MODULE.tables.microprocess_code));
+  }
+
+  get microprocessState(): MicroprocessStateTableHandle {
+    return new MicroprocessStateTableHandle(this.connection.clientCache.getOrCreateTable<MicroprocessState>(REMOTE_MODULE.tables.microprocess_state));
   }
 }
 
