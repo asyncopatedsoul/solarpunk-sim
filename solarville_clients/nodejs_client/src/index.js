@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url';
 
 // Configuration
 const SERVER_URL = 'http://127.0.0.1:3000';
-const MODULE_NAME = 'solarville_server';
+const MODULE_NAME = 'solarville';
 const POLLING_INTERVAL_MS = 1000; // How often to check for new code to run
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

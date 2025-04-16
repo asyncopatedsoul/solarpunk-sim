@@ -169,7 +169,7 @@ pub fn update_player_positions(_ctx: &ReducerContext, _timer: UpdatePlayerTimer)
 }
 
 #[spacetimedb::reducer]
-pub fn save_microprocess_code(ctx: &ReducerContext, name: String, file_path: String, code_content: String) -> Result<u32, String> {
+pub fn update_microprocess_code(ctx: &ReducerContext, name: String, file_path: String, code_content: String) -> Result<(), String> {
     // Get the player ID
     let player = ctx.db.player().identity().find(&ctx.sender).ok_or("Player not found")?;
     
@@ -187,14 +187,16 @@ pub fn save_microprocess_code(ctx: &ReducerContext, name: String, file_path: Str
         log::info!("Updated microprocessor code: {}", name);
         
         // Update any associated state
-        if let Some(mut state) = ctx.db.microprocess_state().code_id().find(&existing_code.code_id) {
+        // if let Some(mut state) = ctx.db.microprocess_state().code_id().eq(&existing_code.code_id) {
+        if let Some(mut state) = ctx.db.microprocess_state().iter()
+            .find(|state| state.code_id == existing_code.code_id) {
             state.is_running = false; // Reset running state when code is updated
             state.error_message = "Code updated, awaiting execution".to_string();
             state.last_updated = ctx.timestamp;
             ctx.db.microprocess_state().state_id().update(state);
         }
         
-        Ok(existing_code.code_id)
+        Ok(())
     } else {
         // Create new code
         let code = ctx.db.microprocess_code().try_insert(MicroprocessCode {
@@ -218,7 +220,7 @@ pub fn save_microprocess_code(ctx: &ReducerContext, name: String, file_path: Str
         })?;
         
         log::info!("Created new microprocessor code: {} with ID: {}", code.name, code.code_id);
-        Ok(code.code_id)
+        Ok(())
     }
 }
 
@@ -232,14 +234,16 @@ pub fn update_microprocess_state(
     is_running: bool
 ) -> Result<(), String> {
     // Ensure code exists
-    let code = ctx.db.microprocess_code().code_id().find(&code_id).ok_or("Code not found")?;
+    let code = ctx.db.microprocess_code().iter()
+    .find(|code| code.code_id == code_id).ok_or("Code not found")?;
     
     // Clamp motor speeds between -1.0 and 1.0
     let left_speed = left_motor_speed.max(-1.0).min(1.0);
     let right_speed = right_motor_speed.max(-1.0).min(1.0);
     
     // Update state
-    if let Some(mut state) = ctx.db.microprocess_state().code_id().find(&code_id) {
+    if let Some(mut state) = ctx.db.microprocess_state().iter()
+            .find(|state| state.code_id == code_id) {
         state.left_motor_speed = left_speed;
         state.right_motor_speed = right_speed;
         state.error_message = error_message;
@@ -267,7 +271,8 @@ pub fn update_microprocess_state(
 #[spacetimedb::reducer]
 pub fn start_microprocess(ctx: &ReducerContext, code_id: u32) -> Result<(), String> {
     // Check if code exists and belongs to caller
-    let code = ctx.db.microprocess_code().code_id().find(&code_id).ok_or("Code not found")?;
+    let code = ctx.db.microprocess_code().iter()
+    .find(|code| code.code_id == code_id).ok_or("Code not found")?;
     let player = ctx.db.player().identity().find(&ctx.sender).ok_or("Player not found")?;
     
     if code.owner_id != player.player_id {
@@ -275,7 +280,8 @@ pub fn start_microprocess(ctx: &ReducerContext, code_id: u32) -> Result<(), Stri
     }
     
     // Update state to indicate it should start running
-    if let Some(mut state) = ctx.db.microprocess_state().code_id().find(&code_id) {
+    if let Some(mut state) = ctx.db.microprocess_state().iter()
+            .find(|state| state.code_id == code_id) {
         state.is_running = true;
         state.error_message = "Starting execution".to_string();
         state.last_updated = ctx.timestamp;
@@ -301,7 +307,8 @@ pub fn start_microprocess(ctx: &ReducerContext, code_id: u32) -> Result<(), Stri
 #[spacetimedb::reducer]
 pub fn stop_microprocess(ctx: &ReducerContext, code_id: u32) -> Result<(), String> {
     // Check if code exists and belongs to caller
-    let code = ctx.db.microprocess_code().code_id().find(&code_id).ok_or("Code not found")?;
+    let code = ctx.db.microprocess_code().iter()
+    .find(|code| code.code_id == code_id).ok_or("Code not found")?;
     let player = ctx.db.player().identity().find(&ctx.sender).ok_or("Player not found")?;
     
     if code.owner_id != player.player_id {
@@ -309,7 +316,8 @@ pub fn stop_microprocess(ctx: &ReducerContext, code_id: u32) -> Result<(), Strin
     }
     
     // Update state to indicate it should stop running
-    if let Some(mut state) = ctx.db.microprocess_state().code_id().find(&code_id) {
+    if let Some(mut state) = ctx.db.microprocess_state().iter()
+            .find(|state| state.code_id == code_id) {
         state.is_running = false;
         state.left_motor_speed = 0.0;
         state.right_motor_speed = 0.0;
