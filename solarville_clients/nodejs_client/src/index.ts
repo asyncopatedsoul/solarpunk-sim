@@ -1,4 +1,5 @@
-import { createClient, Identity, ReducerEvent } from '@spacetimedb/client';
+import { Identity, ReducerEvent } from '@clockworklabs/spacetimedb-sdk';
+import { DbConnection, ErrorContext, EventContext, Player, MicroprocessCode, MicroprocessState } from './module_bindings';
 import { PythonShell } from 'python-shell';
 import fs from 'fs';
 import path from 'path';
@@ -8,69 +9,69 @@ import { initializeReplServer, getActiveSessions, closeSession } from './repl';
 
 // Configuration
 const SERVER_URL = 'http://127.0.0.1:3000';
-const MODULE_NAME = 'solarville_server';
+const MODULE_NAME = 'solarville';
 const POLLING_INTERVAL_MS = 1000; // How often to check for new code to run
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
 
 // Define interfaces for our data types
-interface MicroprocessCode {
-  code_id: number;
-  owner_id: number;
-  name: string;
-  file_path: string;
-  code_content: string;
-  last_updated: Date;
-}
+// interface MicroprocessCode {
+//   code_id: number;
+//   owner_id: number;
+//   name: string;
+//   file_path: string;
+//   code_content: string;
+//   last_updated: Date;
+// }
 
-interface MicroprocessState {
-  state_id: number;
-  code_id: number;
-  left_motor_speed: number;
-  right_motor_speed: number;
-  error_message: string;
-  last_updated: Date;
-  is_running: boolean;
-}
+// interface MicroprocessState {
+//   state_id: number;
+//   code_id: number;
+//   left_motor_speed: number;
+//   right_motor_speed: number;
+//   error_message: string;
+//   last_updated: Date;
+//   is_running: boolean;
+// }
 
 interface RunningProcess {
   process: PythonShell;
   tempFiles: string[];
 }
 
-interface SpacetimeClient {
-  on: (eventName: string, callback: Function) => void;
-  subscribe: () => Promise<void>;
-  tables: {
-    microprocess_code: {
-      findBy: (key: string, value: any) => MicroprocessCode | undefined;
-    };
-    microprocess_state: {
-      findBy: (key: string, value: any) => MicroprocessState | undefined;
-      filter: (predicate: (state: MicroprocessState) => boolean) => MicroprocessState[];
-    };
-  };
-  reducers: {
-    update_microprocess_state: (
-      code_id: number,
-      left_motor_speed: number,
-      right_motor_speed: number,
-      error_message: string,
-      is_running: boolean
-    ) => Promise<void>;
-    save_microprocess_code: (
-      name: string,
-      filePath: string,
-      content: string
-    ) => Promise<number>;
-    start_microprocess: (code_id: number) => Promise<void>;
-    stop_microprocess: (code_id: number) => Promise<void>;
-  };
-}
+// interface SpacetimeClient {
+//   on: (eventName: string, callback: Function) => void;
+//   subscribe: () => Promise<void>;
+//   tables: {
+//     microprocess_code: {
+//       findBy: (key: string, value: any) => MicroprocessCode | undefined;
+//     };
+//     microprocess_state: {
+//       findBy: (key: string, value: any) => MicroprocessState | undefined;
+//       filter: (predicate: (state: MicroprocessState) => boolean) => MicroprocessState[];
+//     };
+//   };
+//   reducers: {
+//     updateMicroprocessState: (
+//       code_id: number,
+//       left_motor_speed: number,
+//       right_motor_speed: number,
+//       error_message: string,
+//       is_running: boolean
+//     ) => Promise<void>;
+//     save_microprocess_code: (
+//       name: string,
+//       filePath: string,
+//       content: string
+//     ) => Promise<number>;
+//     start_microprocess: (code_id: number) => Promise<void>;
+//     stop_microprocess: (code_id: number) => Promise<void>;
+//   };
+// }
 
 // State
 const runningProcesses = new Map<number, RunningProcess>(); // Map of code_id to RunningProcess objects
-let spacetimeClient: SpacetimeClient | null = null;
+let spacetimeClient: DbConnection | null = null;
 let replServer: any = null;
 
 // Setup temp directory for Python scripts
@@ -85,37 +86,61 @@ if (!fs.existsSync(TEMP_DIR)) {
 async function initializeSpacetimeClient(): Promise<void> {
   console.log('Connecting to SpacetimeDB...');
   try {
-    spacetimeClient = await createClient({
-      uri: SERVER_URL,
-      moduleName: MODULE_NAME,
-      onConnect: handleConnect,
-      onDisconnect: handleDisconnect,
-      onReducerError: (event: any) => {
-        console.error('Reducer error:', event);
-      },
-    }) as unknown as SpacetimeClient;
+    spacetimeClient = DbConnection.builder()
+      .withUri('ws://127.0.0.1:3000')
+      .withModuleName('solarville')
+      // .withToken(localStorage.getItem('auth_token') || '')
+      .withToken('')
+      .onConnect(handleConnect)
+      .onDisconnect(handleDisconnect)
+      .onConnectError(handleConnectError)
+      .build()
 
     // Subscribe to updates
-    await spacetimeClient.subscribe();
+    // await spacetimeClient.subscribe();
   } catch (error) {
     console.error('Failed to connect to SpacetimeDB:', error);
   }
 }
 
+const handleConnectError = (_ctx: ErrorContext, err: Error) => {
+  console.log('Error connecting to SpacetimeDB:', err);
+};
+
+const subscribeToQueries = (conn: DbConnection, queries: string[]) => {
+  let count = 0;
+  for (const query of queries) {
+    conn
+      ?.subscriptionBuilder()
+      .onApplied(() => {
+        count++;
+        if (count === queries.length) {
+          console.log('SDK client cache initialized.');
+        }
+      })
+      .subscribe(query);
+  }
+};
+
+
 /**
  * Handle successful connection to SpacetimeDB
  */
-function handleConnect(identity: Identity): void {
+function handleConnect(
+  conn: DbConnection,
+  identity: Identity,
+  token: string
+) {
   console.log('Connected to SpacetimeDB!');
-  console.log('Identity:', identity);
+  console.log('Identity:', identity.toHexString(),);
 
   if (!spacetimeClient) return;
 
   // Set up event listeners for our tables
-  spacetimeClient.on('microprocess_code/insert', handleCodeInsert);
-  spacetimeClient.on('microprocess_code/update', handleCodeUpdate);
-  spacetimeClient.on('microprocess_code/delete', handleCodeDelete);
-  spacetimeClient.on('microprocess_state/update', handleStateUpdate);
+  // spacetimeClient.on('microprocess_code/insert', handleCodeInsert);
+  // spacetimeClient.on('microprocess_code/update', handleCodeUpdate);
+  // spacetimeClient.on('microprocess_code/delete', handleCodeDelete);
+  // spacetimeClient.on('microprocess_state/update', handleStateUpdate);
 
   // Start polling for inactive processes that should be running
   startPolling();
@@ -124,8 +149,8 @@ function handleConnect(identity: Identity): void {
 /**
  * Handle disconnection from SpacetimeDB
  */
-function handleDisconnect(reason: string): void {
-  console.log('Disconnected from SpacetimeDB:', reason);
+function handleDisconnect(): void {
+  console.log('Disconnected from SpacetimeDB:');
 
   // Clean up all running processes
   stopAllPythonProcesses();
@@ -134,17 +159,18 @@ function handleDisconnect(reason: string): void {
   setTimeout(initializeSpacetimeClient, 5000);
 }
 
+
 /**
  * Handle insertion of new microprocessor code
  */
 function handleCodeInsert(code: MicroprocessCode): void {
-  console.log(`New code inserted: ${code.name} (ID: ${code.code_id})`);
+  console.log(`New code inserted: ${code.name} (ID: ${code.codeId})`);
 
   if (!spacetimeClient) return;
 
   // Check if this code is already supposed to be running
-  const state = spacetimeClient.tables.microprocess_state.findBy('code_id', code.code_id);
-  if (state && state.is_running) {
+  const state = spacetimeClient.db.microprocessState.state_id.find(code.codeId);
+  if (state && state.isRunning) {
     startPythonProcess(code);
   }
 }
@@ -153,17 +179,17 @@ function handleCodeInsert(code: MicroprocessCode): void {
  * Handle updates to existing microprocessor code
  */
 function handleCodeUpdate(oldCode: MicroprocessCode, newCode: MicroprocessCode): void {
-  console.log(`Code updated: ${newCode.name} (ID: ${newCode.code_id})`);
+  console.log(`Code updated: ${newCode.name} (ID: ${newCode.codeId})`);
 
   if (!spacetimeClient) return;
 
   // If this code is running, restart the process
-  if (runningProcesses.has(newCode.code_id)) {
-    stopPythonProcess(newCode.code_id);
+  if (runningProcesses.has(newCode.codeId)) {
+    stopPythonProcess(newCode.codeId);
 
     // Check if it should be restarted
-    const state = spacetimeClient.tables.microprocess_state.findBy('code_id', newCode.code_id);
-    if (state && state.is_running) {
+    const state = spacetimeClient.db.microprocessState.state_id.find(newCode.codeId);
+    if (state && state.isRunning) {
       startPythonProcess(newCode);
     }
   }
@@ -173,34 +199,34 @@ function handleCodeUpdate(oldCode: MicroprocessCode, newCode: MicroprocessCode):
  * Handle deletion of microprocessor code
  */
 function handleCodeDelete(code: MicroprocessCode): void {
-  console.log(`Code deleted: ${code.name} (ID: ${code.code_id})`);
-  stopPythonProcess(code.code_id);
+  console.log(`Code deleted: ${code.name} (ID: ${code.codeId})`);
+  stopPythonProcess(code.codeId);
 }
 
 /**
  * Handle updates to microprocessor state
  */
 function handleStateUpdate(oldState: MicroprocessState, newState: MicroprocessState): void {
-  console.log(`State updated for code_id: ${newState.code_id}, Running: ${newState.is_running}`);
+  console.log(`State updated for code_id: ${newState.codeId}, Running: ${newState.isRunning}`);
 
   if (!spacetimeClient) return;
 
   // Find the corresponding code
-  const code = spacetimeClient.tables.microprocess_code.findBy('code_id', newState.code_id);
+  const code = spacetimeClient.db.microprocessCode.code_id.find(newState.codeId);
   if (!code) {
-    console.error(`Cannot find code for state with code_id: ${newState.code_id}`);
+    console.error(`Cannot find code for state with code_id: ${newState.codeId}`);
     return;
   }
 
-  if (newState.is_running) {
+  if (newState.isRunning) {
     // Start the process if it's not already running
-    if (!runningProcesses.has(newState.code_id)) {
+    if (!runningProcesses.has(newState.codeId)) {
       startPythonProcess(code);
     }
   } else {
     // Stop the process if it's running
-    if (runningProcesses.has(newState.code_id)) {
-      stopPythonProcess(newState.code_id);
+    if (runningProcesses.has(newState.codeId)) {
+      stopPythonProcess(newState.codeId);
     }
   }
 }
@@ -210,17 +236,17 @@ function handleStateUpdate(oldState: MicroprocessState, newState: MicroprocessSt
  */
 function startPythonProcess(code: MicroprocessCode): void {
   // If already running, don't start again
-  if (runningProcesses.has(code.code_id)) {
-    console.log(`Process for code_id ${code.code_id} is already running`);
+  if (runningProcesses.has(code.codeId)) {
+    console.log(`Process for code_id ${code.codeId} is already running`);
     return;
   }
 
-  console.log(`Starting Python process for code_id: ${code.code_id}`);
+  console.log(`Starting Python process for code_id: ${code.codeId}`);
 
   try {
     // Create a temporary file for the Python code
-    const tempFilePath = path.join(TEMP_DIR, `${code.code_id}_${Date.now()}.py`);
-    fs.writeFileSync(tempFilePath, code.code_content);
+    const tempFilePath = path.join(TEMP_DIR, `${code.codeId}_${Date.now()}.py`);
+    fs.writeFileSync(tempFilePath, code.codeContent);
 
     // Prepare a wrapper script that calls the user's code and reports motor states
     const wrapperCode = `
@@ -304,7 +330,7 @@ except Exception as e:
     sys.exit(1)
 `;
 
-    const wrapperFilePath = path.join(TEMP_DIR, `wrapper_${code.code_id}_${Date.now()}.py`);
+    const wrapperFilePath = path.join(TEMP_DIR, `wrapper_${code.codeId}_${Date.now()}.py`);
     fs.writeFileSync(wrapperFilePath, wrapperCode);
 
     // Start the Python process
@@ -321,8 +347,8 @@ except Exception as e:
         console.log(`Motor state update: Left: ${state.left_motor_speed}, Right: ${state.right_motor_speed}`);
 
         // Update state in SpacetimeDB
-        spacetimeClient?.reducers.update_microprocess_state(
-          code.code_id,
+        spacetimeClient?.reducers.updateMicroprocessState(
+          code.codeId,
           state.left_motor_speed || 0.0,
           state.right_motor_speed || 0.0,
           state.error || "",
@@ -335,11 +361,11 @@ except Exception as e:
 
     // Handle errors
     pyshell.on('error', (error: Error) => {
-      console.error(`Error in Python process for code_id ${code.code_id}:`, error);
+      console.error(`Error in Python process for code_id ${code.codeId}:`, error);
 
       // Update state in SpacetimeDB
-      spacetimeClient?.reducers.update_microprocess_state(
-        code.code_id,
+      spacetimeClient?.reducers.updateMicroprocessState(
+        code.codeId,
         0.0,
         0.0,
         `Error: ${error.message}`,
@@ -347,9 +373,9 @@ except Exception as e:
       );
 
       // Clean up
-      if (runningProcesses.has(code.code_id)) {
-        const { tempFiles } = runningProcesses.get(code.code_id)!;
-        runningProcesses.delete(code.code_id);
+      if (runningProcesses.has(code.codeId)) {
+        const { tempFiles } = runningProcesses.get(code.codeId)!;
+        runningProcesses.delete(code.codeId);
 
         // Clean up temporary files
         for (const file of tempFiles) {
@@ -362,11 +388,11 @@ except Exception as e:
 
     // Handle process termination
     pyshell.on('close', () => {
-      console.log(`Python process for code_id ${code.code_id} closed`);
+      console.log(`Python process for code_id ${code.codeId} closed`);
 
       // Update state in SpacetimeDB
-      spacetimeClient?.reducers.update_microprocess_state(
-        code.code_id,
+      spacetimeClient?.reducers.updateMicroprocessState(
+        code.codeId,
         0.0,
         0.0,
         "Process terminated",
@@ -374,9 +400,9 @@ except Exception as e:
       );
 
       // Clean up
-      if (runningProcesses.has(code.code_id)) {
-        const { tempFiles } = runningProcesses.get(code.code_id)!;
-        runningProcesses.delete(code.code_id);
+      if (runningProcesses.has(code.codeId)) {
+        const { tempFiles } = runningProcesses.get(code.codeId)!;
+        runningProcesses.delete(code.codeId);
 
         // Clean up temporary files
         for (const file of tempFiles) {
@@ -388,20 +414,20 @@ except Exception as e:
     });
 
     // Store the process
-    runningProcesses.set(code.code_id, {
+    runningProcesses.set(code.codeId, {
       process: pyshell,
       tempFiles: [tempFilePath, wrapperFilePath]
     });
 
-    console.log(`Python process started for code_id: ${code.code_id}`);
+    console.log(`Python process started for code_id: ${code.codeId}`);
 
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error(`Error starting Python process for code_id ${code.code_id}:`, error);
+    console.error(`Error starting Python process for code_id ${code.codeId}:`, error);
 
     // Update state in SpacetimeDB
-    spacetimeClient?.reducers.update_microprocess_state(
-      code.code_id,
+    spacetimeClient?.reducers.updateMicroprocessState(
+      code.codeId,
       0.0,
       0.0,
       `Error starting process: ${errorMessage}`,
@@ -457,6 +483,34 @@ function stopAllPythonProcesses(): void {
   console.log('All Python processes stopped');
 }
 
+function filerStates(filterFuncton: (state: MicroprocessState) => boolean): MicroprocessState[] {
+  if (!spacetimeClient) return [];
+
+  let filteredStates: MicroprocessState[] = [];
+  // Get all running states
+  for (const s of spacetimeClient.db.microprocessState.iter()) {
+    if (filterFuncton(s)) {
+      filteredStates.push(s);
+    }
+  }
+
+  return filteredStates;
+}
+
+function filterCode(filterFuncton: (code: MicroprocessCode) => boolean): MicroprocessCode[] {
+  if (!spacetimeClient) return [];
+
+  let filteredCodes: MicroprocessCode[] = [];
+  // Get all running states
+  for (const s of spacetimeClient.db.microprocessCode.iter()) {
+    if (filterFuncton(s)) {
+      filteredCodes.push(s);
+    }
+  }
+
+  return filteredCodes;
+}
+
 /**
  * Start polling for microprocessor processes that should be running
  */
@@ -471,23 +525,22 @@ function startPolling(): void {
       if (!spacetimeClient) return;
 
       // Get all running states
-      const runningStates = spacetimeClient.tables.microprocess_state
-        .filter(state => state.is_running);
+      const runningStates = filerStates(state => state.isRunning);
 
       // Check each running state to make sure the process is running
       for (const state of runningStates) {
-        if (!runningProcesses.has(state.code_id)) {
+        if (!runningProcesses.has(state.codeId)) {
           // Process should be running but isn't
-          const code = spacetimeClient.tables.microprocess_code.findBy('code_id', state.code_id);
+          const code = filterCode(code => code.codeId == state.codeId)[0];
           if (code) {
-            console.log(`Starting missing process for code_id: ${state.code_id}`);
+            console.log(`Starting missing process for code_id: ${state.codeId}`);
             startPythonProcess(code);
           } else {
-            console.error(`Cannot find code for running state with code_id: ${state.code_id}`);
+            console.error(`Cannot find code for running state with code_id: ${state.codeId}`);
 
             // Update state to not running
-            spacetimeClient.reducers.update_microprocess_state(
-              state.code_id,
+            spacetimeClient.reducers.updateMicroprocessState(
+              state.codeId,
               0.0,
               0.0,
               "Error: Code not found",
@@ -499,8 +552,8 @@ function startPolling(): void {
 
       // Check for processes that should not be running
       for (const codeId of runningProcesses.keys()) {
-        const state = spacetimeClient.tables.microprocess_state.findBy('code_id', codeId);
-        if (!state || !state.is_running) {
+        const state = filerStates(state => state.codeId == codeId)[0];
+        if (!state || !state.isRunning) {
           // Process is running but shouldn't be
           console.log(`Stopping process that should not be running for code_id: ${codeId}`);
           stopPythonProcess(codeId);
@@ -515,24 +568,25 @@ function startPolling(): void {
 /**
  * Save a Python file to SpacetimeDB
  */
-async function savePythonFile(name: string, filePath: string, content: string): Promise<number | null> {
+function savePythonFile(name: string, filePath: string, content: string): void {
   if (!spacetimeClient) {
     console.error('Cannot save Python file: Not connected to SpacetimeDB');
-    return null;
+
   }
 
   try {
-    const codeId = await spacetimeClient.reducers.save_microprocess_code(
-      name,
-      filePath,
-      content
-    );
+    if (spacetimeClient) {
+      spacetimeClient.reducers.addMicroprocessCode(
+        name,
+        filePath,
+        content
+      );
 
-    console.log(`Saved Python file with code_id: ${codeId}`);
-    return codeId;
+      console.log(`Saved Python file: ${name} at ${filePath}`);
+    }
   } catch (error) {
     console.error('Error saving Python file:', error);
-    return null;
+
   }
 }
 
@@ -546,7 +600,7 @@ async function startPythonFile(codeId: number): Promise<boolean> {
   }
 
   try {
-    await spacetimeClient.reducers.start_microprocess(codeId);
+    await spacetimeClient.reducers.startMicroprocess(codeId);
     console.log(`Started Python file with code_id: ${codeId}`);
     return true;
   } catch (error) {
@@ -565,7 +619,7 @@ async function stopPythonFile(codeId: number): Promise<boolean> {
   }
 
   try {
-    await spacetimeClient.reducers.stop_microprocess(codeId);
+    await spacetimeClient.reducers.stopMicroprocess(codeId);
     console.log(`Stopped Python file with code_id: ${codeId}`);
     return true;
   } catch (error) {
@@ -601,10 +655,10 @@ async function main(): Promise<void> {
       const filePath = process.argv[4];
       const content = fs.readFileSync(process.argv[5], 'utf8');
 
-      const codeId = await savePythonFile(name, filePath, content);
-      if (codeId) {
-        console.log(`Saved file with code_id: ${codeId}`);
-      }
+      savePythonFile(name, filePath, content);
+      // if (codeId) {
+      //   console.log(`Saved file with code_id: ${codeId}`);
+      // }
     } else if (command === 'start' && process.argv.length > 3) {
       const codeId = parseInt(process.argv[3]);
       await startPythonFile(codeId);

@@ -8,8 +8,8 @@ import { Server, Socket } from 'socket.io';
 import { fileURLToPath } from 'url';
 
 // Configuration
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
 const TEMP_DIR = path.join(os.tmpdir(), 'solarville-microprocessor');
 const PORT = 3100;
 
@@ -184,8 +184,8 @@ print(json.dumps({"type": "ready", "message": "Python REPL ready!"}), flush=True
   fs.writeFileSync(tempFile, replSetupCode);
 
   // Options for PythonShell
-  const options = {
-    mode: 'text',
+  let options = {
+    // mode: "text",
     pythonPath: 'python3',
     pythonOptions: ['-u'],  // unbuffered stdout
     scriptPath: TEMP_DIR,

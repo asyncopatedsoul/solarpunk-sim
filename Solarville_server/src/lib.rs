@@ -147,6 +147,26 @@ pub fn register_player(ctx: &ReducerContext, name: String, position: DbVector3, 
 }
 
 #[spacetimedb::reducer]
+pub fn add_microprocess_code(ctx: &ReducerContext, name:String, code_content:String, file_path:String) -> Result<(), String> {
+    // Check if the player exists
+    if ctx.db.player().identity().find(&ctx.sender).is_none() {
+        return Err("Player not found".to_string());
+    }
+
+    // Insert the new microprocess code
+    ctx.db.microprocess_code().try_insert(MicroprocessCode {
+        code_id: 0, // Auto-incremented
+        owner_id: ctx.db.player().identity().find(&ctx.sender).unwrap().player_id,
+        name,
+        file_path,
+        code_content,
+        last_updated: ctx.timestamp,
+    })?;
+
+    Ok(())
+}
+
+#[spacetimedb::reducer]
 pub fn update_player_position(ctx: &ReducerContext, position: DbVector3, rotation: DbVector3) -> Result<(), String> {
     // Find the player and update their position and rotation
     if let Some(mut player) = ctx.db.player().identity().find(&ctx.sender) {
