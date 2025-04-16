@@ -3,98 +3,104 @@
 
 /* eslint-disable */
 /* tslint:disable */
+// @ts-nocheck
 import {
   AlgebraicType,
   AlgebraicValue,
   BinaryReader,
   BinaryWriter,
+  CallReducerFlags,
+  ConnectionId,
+  DbConnectionBuilder,
+  DbConnectionImpl,
+  DbContext,
+  ErrorContextInterface,
+  Event,
   EventContextInterface,
+  Identity,
   ProductType,
   ProductTypeElement,
+  ReducerEventContextInterface,
+  SubscriptionBuilderImpl,
+  SubscriptionEventContextInterface,
   SumType,
   SumTypeVariant,
   TableCache,
+  TimeDuration,
   Timestamp,
+  deepEqual,
 } from "@clockworklabs/spacetimedb-sdk";
-
-// Import types this type depends on
 import { MicroprocessCode } from "./microprocess_code_type";
+import { EventContext, Reducer, RemoteReducers, RemoteTables } from ".";
 
 /**
- * Handle for MicroprocessCode table
+ * Table handle for the table `microprocess_code`.
+ *
+ * Obtain a handle from the [`microprocessCode`] property on [`RemoteTables`],
+ * like `ctx.db.microprocessCode`.
+ *
+ * Users are encouraged not to explicitly reference this type,
+ * but to directly chain method calls,
+ * like `ctx.db.microprocessCode.on_insert(...)`.
  */
 export class MicroprocessCodeTableHandle {
-  constructor(public table: TableCache<MicroprocessCode>) {}
+  tableCache: TableCache<MicroprocessCode>;
 
-  get onInsert(): ((ctx: any, insertedValue: MicroprocessCode) => void) | null {
-    return this.table.onInsert;
+  constructor(tableCache: TableCache<MicroprocessCode>) {
+    this.tableCache = tableCache;
   }
 
-  set onInsert(callback: ((ctx: any, insertedValue: MicroprocessCode) => void) | null) {
-    this.table.onInsert = callback;
-  }
-
-  get onUpdate(): ((ctx: any, oldValue: MicroprocessCode, newValue: MicroprocessCode) => void) | null {
-    return this.table.onUpdate;
-  }
-
-  set onUpdate(callback: ((ctx: any, oldValue: MicroprocessCode, newValue: MicroprocessCode) => void) | null) {
-    this.table.onUpdate = callback;
-  }
-
-  get onDelete(): ((ctx: any, deletedValue: MicroprocessCode) => void) | null {
-    return this.table.onDelete;
-  }
-
-  set onDelete(callback: ((ctx: any, deletedValue: MicroprocessCode) => void) | null) {
-    this.table.onDelete = callback;
-  }
-
-  /// Returns an iterator of all rows in this table.
-  iter(): IterableIterator<MicroprocessCode> {
-    return this.table.iter();
-  }
-
-  /// Returns the row from this table if the row's primary key equals `pk`.
-  code_id(): CodeIdIndex {
-    return new CodeIdIndex(this.table);
-  }
-
-  /// Returns the row from this table if the row's primary key equals `pk`.
-  owner_id(): OwnerIdIndex {
-    return new OwnerIdIndex(this.table);
-  }
-
-  /// Returns all rows in this table.
-  filter(predicate: (value: MicroprocessCode) => boolean): Array<MicroprocessCode> {
-    return this.table.filter(predicate);
-  }
-
-  /// Returns the number of rows in this table.
   count(): number {
-    return this.table.count();
-  }
-}
-
-export class CodeIdIndex {
-  constructor(public table: TableCache<MicroprocessCode>) {}
-
-  /// Returns the row from this table if the row's `code_id` equals the parameter.
-  findBy(pk: number): MicroprocessCode | undefined {
-    return this.table.findBy("code_id", pk);
+    return this.tableCache.count();
   }
 
-  /// Returns all rows from this table that match the given `code_id` values.
-  findAllBy(pks: number[]): MicroprocessCode[] {
-    return this.table.findAllBy("code_id", pks);
+  iter(): Iterable<MicroprocessCode> {
+    return this.tableCache.iter();
   }
-}
+  /**
+   * Access to the `code_id` unique index on the table `microprocess_code`,
+   * which allows point queries on the field of the same name
+   * via the [`MicroprocessCodeCodeIdUnique.find`] method.
+   *
+   * Users are encouraged not to explicitly reference this type,
+   * but to directly chain method calls,
+   * like `ctx.db.microprocessCode.code_id().find(...)`.
+   *
+   * Get a handle on the `code_id` unique index on the table `microprocess_code`.
+   */
+  code_id = {
+    // Find the subscribed row whose `code_id` column value is equal to `col_val`,
+    // if such a row is present in the client cache.
+    find: (col_val: number): MicroprocessCode | undefined => {
+      for (let row of this.tableCache.iter()) {
+        if (deepEqual(row.code_id, col_val)) {
+          return row;
+        }
+      }
+    },
+  };
 
-export class OwnerIdIndex {
-  constructor(public table: TableCache<MicroprocessCode>) {}
-
-  /// Returns rows from this table where the `owner_id` field equals the parameter.
-  filter(owner_id: number): Array<MicroprocessCode> {
-    return this.table.filterBy("owner_id", owner_id);
+  onInsert = (cb: (ctx: EventContext, row: MicroprocessCode) => void) => {
+    return this.tableCache.onInsert(cb);
   }
-}
+
+  removeOnInsert = (cb: (ctx: EventContext, row: MicroprocessCode) => void) => {
+    return this.tableCache.removeOnInsert(cb);
+  }
+
+  onDelete = (cb: (ctx: EventContext, row: MicroprocessCode) => void) => {
+    return this.tableCache.onDelete(cb);
+  }
+
+  removeOnDelete = (cb: (ctx: EventContext, row: MicroprocessCode) => void) => {
+    return this.tableCache.removeOnDelete(cb);
+  }
+
+  // Updates are only defined for tables with primary keys.
+  onUpdate = (cb: (ctx: EventContext, oldRow: MicroprocessCode, newRow: MicroprocessCode) => void) => {
+    return this.tableCache.onUpdate(cb);
+  }
+
+  removeOnUpdate = (cb: (ctx: EventContext, onRow: MicroprocessCode, newRow: MicroprocessCode) => void) => {
+    return this.tableCache.removeOnUpdate(cb);
+  }}

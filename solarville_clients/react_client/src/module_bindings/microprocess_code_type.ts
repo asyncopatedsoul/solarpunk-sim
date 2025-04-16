@@ -3,53 +3,69 @@
 
 /* eslint-disable */
 /* tslint:disable */
+// @ts-nocheck
 import {
   AlgebraicType,
   AlgebraicValue,
   BinaryReader,
   BinaryWriter,
+  CallReducerFlags,
+  ConnectionId,
+  DbConnectionBuilder,
+  DbConnectionImpl,
+  DbContext,
+  ErrorContextInterface,
+  Event,
+  EventContextInterface,
+  Identity,
   ProductType,
   ProductTypeElement,
+  ReducerEventContextInterface,
+  SubscriptionBuilderImpl,
+  SubscriptionEventContextInterface,
   SumType,
   SumTypeVariant,
+  TableCache,
+  TimeDuration,
   Timestamp,
+  deepEqual,
 } from "@clockworklabs/spacetimedb-sdk";
-
-// Import types this type depends on
-import { Timestamp as Timestamp_IGNORE } from "@clockworklabs/spacetimedb-sdk";
+export type MicroprocessCode = {
+  codeId: number,
+  ownerId: number,
+  name: string,
+  filePath: string,
+  codeContent: string,
+  lastUpdated: Timestamp,
+};
 
 /**
- * Client-side representation of MicroprocessCode table from the server
+ * A namespace for generated helper functions.
  */
-export class MicroprocessCode {
-  constructor(
-    public code_id: number,
-    public owner_id: number,
-    public name: string,
-    public file_path: string,
-    public code_content: string,
-    public last_updated: Timestamp,
-  ) {}
-
-  static getTypeScriptAlgebraicType(): AlgebraicType {
-    return new ProductType([
-      new ProductTypeElement("code_id", AlgebraicType.createPrimitive("u32")),
-      new ProductTypeElement("owner_id", AlgebraicType.createPrimitive("u32")),
-      new ProductTypeElement("name", AlgebraicType.createPrimitive("String")),
-      new ProductTypeElement("file_path", AlgebraicType.createPrimitive("String")),
-      new ProductTypeElement("code_content", AlgebraicType.createPrimitive("String")),
-      new ProductTypeElement("last_updated", AlgebraicType.createPrimitive("Timestamp")),
+export namespace MicroprocessCode {
+  /**
+  * A function which returns this type represented as an AlgebraicType.
+  * This function is derived from the AlgebraicType used to generate this type.
+  */
+  export function getTypeScriptAlgebraicType(): AlgebraicType {
+    return AlgebraicType.createProductType([
+      new ProductTypeElement("codeId", AlgebraicType.createU32Type()),
+      new ProductTypeElement("ownerId", AlgebraicType.createU32Type()),
+      new ProductTypeElement("name", AlgebraicType.createStringType()),
+      new ProductTypeElement("filePath", AlgebraicType.createStringType()),
+      new ProductTypeElement("codeContent", AlgebraicType.createStringType()),
+      new ProductTypeElement("lastUpdated", AlgebraicType.createTimestampType()),
     ]);
   }
 
-  static fromAlgebraicValue(value: AlgebraicValue): MicroprocessCode {
-    const elements = value.getElementsOfProductValue();
-    const code_id = elements[0].getValueAsU32();
-    const owner_id = elements[1].getValueAsU32();
-    const name = elements[2].getValueAsString();
-    const file_path = elements[3].getValueAsString();
-    const code_content = elements[4].getValueAsString();
-    const last_updated = elements[5].getValueAsTimestamp();
-    return new MicroprocessCode(code_id, owner_id, name, file_path, code_content, last_updated);
+  export function serialize(writer: BinaryWriter, value: MicroprocessCode): void {
+    MicroprocessCode.getTypeScriptAlgebraicType().serialize(writer, value);
   }
+
+  export function deserialize(reader: BinaryReader): MicroprocessCode {
+    return MicroprocessCode.getTypeScriptAlgebraicType().deserialize(reader);
+  }
+
 }
+
+

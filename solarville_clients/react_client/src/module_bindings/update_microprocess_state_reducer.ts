@@ -3,46 +3,67 @@
 
 /* eslint-disable */
 /* tslint:disable */
+// @ts-nocheck
 import {
   AlgebraicType,
   AlgebraicValue,
   BinaryReader,
   BinaryWriter,
+  CallReducerFlags,
+  ConnectionId,
+  DbConnectionBuilder,
+  DbConnectionImpl,
+  DbContext,
+  ErrorContextInterface,
+  Event,
+  EventContextInterface,
+  Identity,
   ProductType,
   ProductTypeElement,
+  ReducerEventContextInterface,
+  SubscriptionBuilderImpl,
+  SubscriptionEventContextInterface,
   SumType,
   SumTypeVariant,
+  TableCache,
+  TimeDuration,
+  Timestamp,
+  deepEqual,
 } from "@clockworklabs/spacetimedb-sdk";
 
-/**
- * Reducer arguments for UpdateMicroprocessState
- */
-export class UpdateMicroprocessState {
-  constructor(
-    public code_id: number,
-    public left_motor_speed: number,
-    public right_motor_speed: number,
-    public error_message: string,
-    public is_running: boolean,
-  ) {}
+export type UpdateMicroprocessState = {
+  codeId: number,
+  leftMotorSpeed: number,
+  rightMotorSpeed: number,
+  errorMessage: string,
+  isRunning: boolean,
+};
 
-  static getTypeScriptAlgebraicType(): AlgebraicType {
-    return new ProductType([
-      new ProductTypeElement("code_id", AlgebraicType.createPrimitive("u32")),
-      new ProductTypeElement("left_motor_speed", AlgebraicType.createPrimitive("f32")),
-      new ProductTypeElement("right_motor_speed", AlgebraicType.createPrimitive("f32")),
-      new ProductTypeElement("error_message", AlgebraicType.createPrimitive("String")),
-      new ProductTypeElement("is_running", AlgebraicType.createPrimitive("Bool")),
+/**
+ * A namespace for generated helper functions.
+ */
+export namespace UpdateMicroprocessState {
+  /**
+  * A function which returns this type represented as an AlgebraicType.
+  * This function is derived from the AlgebraicType used to generate this type.
+  */
+  export function getTypeScriptAlgebraicType(): AlgebraicType {
+    return AlgebraicType.createProductType([
+      new ProductTypeElement("codeId", AlgebraicType.createU32Type()),
+      new ProductTypeElement("leftMotorSpeed", AlgebraicType.createF32Type()),
+      new ProductTypeElement("rightMotorSpeed", AlgebraicType.createF32Type()),
+      new ProductTypeElement("errorMessage", AlgebraicType.createStringType()),
+      new ProductTypeElement("isRunning", AlgebraicType.createBoolType()),
     ]);
   }
 
-  static fromAlgebraicValue(value: AlgebraicValue): UpdateMicroprocessState {
-    const elements = value.getElementsOfProductValue();
-    const code_id = elements[0].getValueAsU32();
-    const left_motor_speed = elements[1].getValueAsF32();
-    const right_motor_speed = elements[2].getValueAsF32();
-    const error_message = elements[3].getValueAsString();
-    const is_running = elements[4].getValueAsBool();
-    return new UpdateMicroprocessState(code_id, left_motor_speed, right_motor_speed, error_message, is_running);
+  export function serialize(writer: BinaryWriter, value: UpdateMicroprocessState): void {
+    UpdateMicroprocessState.getTypeScriptAlgebraicType().serialize(writer, value);
   }
+
+  export function deserialize(reader: BinaryReader): UpdateMicroprocessState {
+    return UpdateMicroprocessState.getTypeScriptAlgebraicType().deserialize(reader);
+  }
+
 }
+

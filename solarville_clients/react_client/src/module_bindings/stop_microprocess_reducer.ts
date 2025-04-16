@@ -3,34 +3,59 @@
 
 /* eslint-disable */
 /* tslint:disable */
+// @ts-nocheck
 import {
   AlgebraicType,
   AlgebraicValue,
   BinaryReader,
   BinaryWriter,
+  CallReducerFlags,
+  ConnectionId,
+  DbConnectionBuilder,
+  DbConnectionImpl,
+  DbContext,
+  ErrorContextInterface,
+  Event,
+  EventContextInterface,
+  Identity,
   ProductType,
   ProductTypeElement,
+  ReducerEventContextInterface,
+  SubscriptionBuilderImpl,
+  SubscriptionEventContextInterface,
   SumType,
   SumTypeVariant,
+  TableCache,
+  TimeDuration,
+  Timestamp,
+  deepEqual,
 } from "@clockworklabs/spacetimedb-sdk";
 
-/**
- * Reducer arguments for StopMicroprocess
- */
-export class StopMicroprocess {
-  constructor(
-    public code_id: number,
-  ) {}
+export type StopMicroprocess = {
+  codeId: number,
+};
 
-  static getTypeScriptAlgebraicType(): AlgebraicType {
-    return new ProductType([
-      new ProductTypeElement("code_id", AlgebraicType.createPrimitive("u32")),
+/**
+ * A namespace for generated helper functions.
+ */
+export namespace StopMicroprocess {
+  /**
+  * A function which returns this type represented as an AlgebraicType.
+  * This function is derived from the AlgebraicType used to generate this type.
+  */
+  export function getTypeScriptAlgebraicType(): AlgebraicType {
+    return AlgebraicType.createProductType([
+      new ProductTypeElement("codeId", AlgebraicType.createU32Type()),
     ]);
   }
 
-  static fromAlgebraicValue(value: AlgebraicValue): StopMicroprocess {
-    const elements = value.getElementsOfProductValue();
-    const code_id = elements[0].getValueAsU32();
-    return new StopMicroprocess(code_id);
+  export function serialize(writer: BinaryWriter, value: StopMicroprocess): void {
+    StopMicroprocess.getTypeScriptAlgebraicType().serialize(writer, value);
   }
+
+  export function deserialize(reader: BinaryReader): StopMicroprocess {
+    return StopMicroprocess.getTypeScriptAlgebraicType().deserialize(reader);
+  }
+
 }
+

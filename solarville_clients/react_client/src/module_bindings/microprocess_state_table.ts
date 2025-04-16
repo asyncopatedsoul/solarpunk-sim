@@ -3,103 +3,104 @@
 
 /* eslint-disable */
 /* tslint:disable */
+// @ts-nocheck
 import {
   AlgebraicType,
   AlgebraicValue,
   BinaryReader,
   BinaryWriter,
+  CallReducerFlags,
+  ConnectionId,
+  DbConnectionBuilder,
+  DbConnectionImpl,
+  DbContext,
+  ErrorContextInterface,
+  Event,
   EventContextInterface,
+  Identity,
   ProductType,
   ProductTypeElement,
+  ReducerEventContextInterface,
+  SubscriptionBuilderImpl,
+  SubscriptionEventContextInterface,
   SumType,
   SumTypeVariant,
   TableCache,
+  TimeDuration,
   Timestamp,
+  deepEqual,
 } from "@clockworklabs/spacetimedb-sdk";
-
-// Import types this type depends on
 import { MicroprocessState } from "./microprocess_state_type";
+import { EventContext, Reducer, RemoteReducers, RemoteTables } from ".";
 
 /**
- * Handle for MicroprocessState table
+ * Table handle for the table `microprocess_state`.
+ *
+ * Obtain a handle from the [`microprocessState`] property on [`RemoteTables`],
+ * like `ctx.db.microprocessState`.
+ *
+ * Users are encouraged not to explicitly reference this type,
+ * but to directly chain method calls,
+ * like `ctx.db.microprocessState.on_insert(...)`.
  */
 export class MicroprocessStateTableHandle {
-  constructor(public table: TableCache<MicroprocessState>) {}
+  tableCache: TableCache<MicroprocessState>;
 
-  get onInsert(): ((ctx: any, insertedValue: MicroprocessState) => void) | null {
-    return this.table.onInsert;
+  constructor(tableCache: TableCache<MicroprocessState>) {
+    this.tableCache = tableCache;
   }
 
-  set onInsert(callback: ((ctx: any, insertedValue: MicroprocessState) => void) | null) {
-    this.table.onInsert = callback;
-  }
-
-  get onUpdate(): ((ctx: any, oldValue: MicroprocessState, newValue: MicroprocessState) => void) | null {
-    return this.table.onUpdate;
-  }
-
-  set onUpdate(callback: ((ctx: any, oldValue: MicroprocessState, newValue: MicroprocessState) => void) | null) {
-    this.table.onUpdate = callback;
-  }
-
-  get onDelete(): ((ctx: any, deletedValue: MicroprocessState) => void) | null {
-    return this.table.onDelete;
-  }
-
-  set onDelete(callback: ((ctx: any, deletedValue: MicroprocessState) => void) | null) {
-    this.table.onDelete = callback;
-  }
-
-  /// Returns an iterator of all rows in this table.
-  iter(): IterableIterator<MicroprocessState> {
-    return this.table.iter();
-  }
-
-  /// Returns the row from this table if the row's primary key equals `pk`.
-  state_id(): StateIdIndex {
-    return new StateIdIndex(this.table);
-  }
-
-  /// Returns the row from this table if the row's primary key equals `pk`.
-  code_id(): CodeIdIndex {
-    return new CodeIdIndex(this.table);
-  }
-
-  /// Returns all rows in this table.
-  filter(predicate: (value: MicroprocessState) => boolean): Array<MicroprocessState> {
-    return this.table.filter(predicate);
-  }
-
-  /// Returns the number of rows in this table.
   count(): number {
-    return this.table.count();
-  }
-}
-
-export class StateIdIndex {
-  constructor(public table: TableCache<MicroprocessState>) {}
-
-  /// Returns the row from this table if the row's `state_id` equals the parameter.
-  findBy(pk: number): MicroprocessState | undefined {
-    return this.table.findBy("state_id", pk);
+    return this.tableCache.count();
   }
 
-  /// Returns all rows from this table that match the given `state_id` values.
-  findAllBy(pks: number[]): MicroprocessState[] {
-    return this.table.findAllBy("state_id", pks);
+  iter(): Iterable<MicroprocessState> {
+    return this.tableCache.iter();
   }
-}
+  /**
+   * Access to the `state_id` unique index on the table `microprocess_state`,
+   * which allows point queries on the field of the same name
+   * via the [`MicroprocessStateStateIdUnique.find`] method.
+   *
+   * Users are encouraged not to explicitly reference this type,
+   * but to directly chain method calls,
+   * like `ctx.db.microprocessState.state_id().find(...)`.
+   *
+   * Get a handle on the `state_id` unique index on the table `microprocess_state`.
+   */
+  state_id = {
+    // Find the subscribed row whose `state_id` column value is equal to `col_val`,
+    // if such a row is present in the client cache.
+    find: (col_val: number): MicroprocessState | undefined => {
+      for (let row of this.tableCache.iter()) {
+        if (deepEqual(row.state_id, col_val)) {
+          return row;
+        }
+      }
+    },
+  };
 
-export class CodeIdIndex {
-  constructor(public table: TableCache<MicroprocessState>) {}
-
-  /// Returns rows from this table where the `code_id` field equals the parameter.
-  findBy(code_id: number): MicroprocessState | undefined {
-    return this.table.findBy("code_id", code_id);
+  onInsert = (cb: (ctx: EventContext, row: MicroprocessState) => void) => {
+    return this.tableCache.onInsert(cb);
   }
 
-  /// Returns rows from this table where the `code_id` field equals any value in the parameter list.
-  filter(code_id: number): Array<MicroprocessState> {
-    return this.table.filterBy("code_id", code_id);
+  removeOnInsert = (cb: (ctx: EventContext, row: MicroprocessState) => void) => {
+    return this.tableCache.removeOnInsert(cb);
   }
-}
+
+  onDelete = (cb: (ctx: EventContext, row: MicroprocessState) => void) => {
+    return this.tableCache.onDelete(cb);
+  }
+
+  removeOnDelete = (cb: (ctx: EventContext, row: MicroprocessState) => void) => {
+    return this.tableCache.removeOnDelete(cb);
+  }
+
+  // Updates are only defined for tables with primary keys.
+  onUpdate = (cb: (ctx: EventContext, oldRow: MicroprocessState, newRow: MicroprocessState) => void) => {
+    return this.tableCache.onUpdate(cb);
+  }
+
+  removeOnUpdate = (cb: (ctx: EventContext, onRow: MicroprocessState, newRow: MicroprocessState) => void) => {
+    return this.tableCache.removeOnUpdate(cb);
+  }}

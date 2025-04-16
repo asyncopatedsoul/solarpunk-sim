@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { DbConnection } from '../module_bindings';
-
+import { socket as replSocket } from '../socket';
 // Styles
 const styles = {
   container: {
@@ -31,7 +31,7 @@ const styles = {
     fontFamily: 'monospace',
     border: 'none',
     outline: 'none',
-    resize: 'none',
+    // resize: 'none',
   },
   button: {
     padding: '0 15px',
@@ -96,7 +96,7 @@ interface ReplInterfaceProps {
   height?: string;
 }
 
-const REPL_SERVER_URL = 'http://localhost:3100';
+// const REPL_SERVER_URL = 'http://localhost:3100';
 
 const ReplInterface: React.FC<ReplInterfaceProps> = ({ dbConnection, height = '500px' }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
@@ -118,11 +118,16 @@ const ReplInterface: React.FC<ReplInterfaceProps> = ({ dbConnection, height = '5
     }
   }, [outputLines]);
 
+  // const socket = io(REPL_SERVER_URL);
+
   // Connect to REPL server
   useEffect(() => {
-    const newSocket = io(REPL_SERVER_URL);
 
-    newSocket.on('connect', () => {
+    console.log('setup socket', replSocket);
+
+    replSocket.on('connect', () => {
+      console.log('Connected to REPL server');
+      setSocket(replSocket);
       setConnected(true);
       setOutputLines(prev => [...prev, {
         type: 'system',
@@ -131,7 +136,7 @@ const ReplInterface: React.FC<ReplInterfaceProps> = ({ dbConnection, height = '5
       }]);
     });
 
-    newSocket.on('disconnect', () => {
+    replSocket.on('disconnect', () => {
       setConnected(false);
       setOutputLines(prev => [...prev, {
         type: 'system',
@@ -140,10 +145,10 @@ const ReplInterface: React.FC<ReplInterfaceProps> = ({ dbConnection, height = '5
       }]);
     });
 
-    newSocket.on('repl_output', (data) => {
+    replSocket.on('repl_output', (data) => {
       setOutputLines(prev => [...prev, {
         type: data.type,
-        message: data.type === 'motor_state' 
+        message: data.type === 'motor_state'
           ? `Motors: Left ${data.left_motor_speed.toFixed(2)}, Right ${data.right_motor_speed.toFixed(2)}`
           : data.message,
         timestamp: Date.now()
@@ -156,10 +161,16 @@ const ReplInterface: React.FC<ReplInterfaceProps> = ({ dbConnection, height = '5
       }
     });
 
-    setSocket(newSocket);
+    
+
+    replSocket.connect();
+
 
     return () => {
-      newSocket.disconnect();
+      if (replSocket) {
+        replSocket.disconnect();
+      }
+      // socket.disconnect();
     };
   }, []);
 
@@ -192,10 +203,10 @@ const ReplInterface: React.FC<ReplInterfaceProps> = ({ dbConnection, height = '5
   // Update motor values
   const updateMotors = () => {
     if (!socket || !connected) return;
-    socket.emit('set_motors', { 
-      left: leftMotor, 
-      right: rightMotor, 
-      codeId: currentCodeId 
+    socket.emit('set_motors', {
+      left: leftMotor,
+      right: rightMotor,
+      codeId: currentCodeId
     });
   };
 
@@ -211,18 +222,18 @@ const ReplInterface: React.FC<ReplInterfaceProps> = ({ dbConnection, height = '5
     }
 
     try {
-      const codeId = await dbConnection.reducers.save_microprocess_code(
+      dbConnection.reducers.addMicroprocessCode(
         scriptName,
         `repl_script_${Date.now()}.py`,
         inputValue
       );
-
-      setCurrentCodeId(codeId);
-      setOutputLines(prev => [...prev, {
-        type: 'system',
-        message: `Script saved with ID: ${codeId}`,
-        timestamp: Date.now()
-      }]);
+      // TODO watch for new MicroprocessCode in table onInsert
+      // setCurrentCodeId(codeId);
+      // setOutputLines(prev => [...prev, {
+      //   type: 'system',
+      //   message: `Script saved with ID: ${codeId}`,
+      //   timestamp: Date.now()
+      // }]);
     } catch (error) {
       setOutputLines(prev => [...prev, {
         type: 'error',
@@ -244,7 +255,7 @@ const ReplInterface: React.FC<ReplInterfaceProps> = ({ dbConnection, height = '5
     }
 
     try {
-      await dbConnection.reducers.start_microprocess(currentCodeId);
+      dbConnection.reducers.startMicroprocess(currentCodeId);
       setOutputLines(prev => [...prev, {
         type: 'system',
         message: `Script started with ID: ${currentCodeId}`,
@@ -271,7 +282,7 @@ const ReplInterface: React.FC<ReplInterfaceProps> = ({ dbConnection, height = '5
     }
 
     try {
-      await dbConnection.reducers.stop_microprocess(currentCodeId);
+      await dbConnection.reducers.stopMicroprocess(currentCodeId);
       setOutputLines(prev => [...prev, {
         type: 'system',
         message: `Script stopped with ID: ${currentCodeId}`,
@@ -310,7 +321,7 @@ const ReplInterface: React.FC<ReplInterfaceProps> = ({ dbConnection, height = '5
           </div>
         ))}
       </pre>
-      
+
       <div style={styles.motorControls}>
         <div style={styles.controlGroup}>
           <div style={styles.label}>Left Motor</div>
@@ -326,7 +337,7 @@ const ReplInterface: React.FC<ReplInterfaceProps> = ({ dbConnection, height = '5
           />
           <div style={styles.value}>{leftMotor.toFixed(1)}</div>
         </div>
-        
+
         <div style={styles.controlGroup}>
           <div style={styles.label}>Right Motor</div>
           <input
@@ -341,7 +352,7 @@ const ReplInterface: React.FC<ReplInterfaceProps> = ({ dbConnection, height = '5
           />
           <div style={styles.value}>{rightMotor.toFixed(1)}</div>
         </div>
-        
+
         <div style={styles.controlGroup}>
           <input
             type="text"
@@ -351,23 +362,23 @@ const ReplInterface: React.FC<ReplInterfaceProps> = ({ dbConnection, height = '5
             style={{ margin: '5px 0' }}
           />
           <div style={{ display: 'flex', gap: '5px' }}>
-            <button 
-              onClick={saveScript} 
-              style={styles.saveButton} 
+            <button
+              onClick={saveScript}
+              style={styles.saveButton}
               disabled={!connected || !inputValue.trim()}
             >
               Save
             </button>
-            <button 
-              onClick={startScript} 
-              style={{...styles.saveButton, backgroundColor: '#4CAF50'}} 
+            <button
+              onClick={startScript}
+              style={{ ...styles.saveButton, backgroundColor: '#4CAF50' }}
               disabled={!connected || currentCodeId === null}
             >
               Start
             </button>
-            <button 
-              onClick={stopScript} 
-              style={{...styles.saveButton, backgroundColor: '#f44336'}} 
+            <button
+              onClick={stopScript}
+              style={{ ...styles.saveButton, backgroundColor: '#f44336' }}
               disabled={!connected || currentCodeId === null}
             >
               Stop
@@ -375,7 +386,7 @@ const ReplInterface: React.FC<ReplInterfaceProps> = ({ dbConnection, height = '5
           </div>
         </div>
       </div>
-      
+
       <div style={styles.input}>
         <textarea
           value={inputValue}

@@ -53,40 +53,40 @@ function App() {
       ]);
 
       // Set up listeners for our tables
-      conn.tables.microprocess_code.onInsert((code) => {
+      conn.db.microprocessCode.onInsert((code) => {
         console.log('Microprocess code inserted:', code);
-        setMicroprocessCodes(prev => [...prev, code]);
+        // setMicroprocessCodes(prev => [...prev, code]);
       });
 
-      conn.tables.microprocess_code.onUpdate((oldCode, newCode) => {
+      conn.db.microprocessCode.onUpdate((oldCode, newCode) => {
         console.log('Microprocess code updated:', newCode);
-        setMicroprocessCodes(prev => 
-          prev.map(code => code.code_id === newCode.code_id ? newCode : code)
-        );
+        // setMicroprocessCodes(prev => 
+        //   prev.map(code => code.codeId === newCode.codeId ? newCode : code)
+        // );
       });
 
-      conn.tables.microprocess_code.onDelete((code) => {
+      conn.db.microprocessCode.onDelete((code) => {
         console.log('Microprocess code deleted:', code);
-        setMicroprocessCodes(prev => 
-          prev.filter(c => c.code_id !== code.code_id)
-        );
+        // setMicroprocessCodes(prev => 
+        //   prev.filter(c => c.codeId !== code.codeId)
+        // );
       });
 
-      conn.tables.microprocess_state.onInsert((state) => {
+      conn.db.microprocessState.onInsert((state) => {
         console.log('Microprocess state inserted:', state);
-        setMicroprocessStates(prev => [...prev, state]);
+        // setMicroprocessStates(prev => [...prev, state]);
       });
 
-      conn.tables.microprocess_state.onUpdate((oldState, newState) => {
+      conn.db.microprocessState.onUpdate((oldState, newState) => {
         console.log('Microprocess state updated:', newState);
-        setMicroprocessStates(prev => 
-          prev.map(state => state.code_id === newState.code_id ? newState : state)
-        );
+        // setMicroprocessStates(prev => 
+        //   prev.map(state => state.codeId === newState.codeId ? newState : state)
+        // );
       });
 
       // Initialize the local state with existing data
-      setMicroprocessCodes(conn.tables.microprocess_code.filter(() => true));
-      setMicroprocessStates(conn.tables.microprocess_state.filter(() => true));
+      // setMicroprocessCodes(conn.db.microprocessCode.filter(() => true));
+      // setMicroprocessStates(conn.db.microprocessState.filter(() => true));
     };
 
     const onDisconnect = () => {
@@ -228,7 +228,7 @@ function App() {
     if (!conn) return;
     
     try {
-      await conn.reducers.start_microprocess(codeId);
+      conn.reducers.startMicroprocess(codeId);
       console.log(`Started microprocess ${codeId}`);
     } catch (error) {
       console.error('Error starting microprocess:', error);
@@ -240,7 +240,7 @@ function App() {
     if (!conn) return;
     
     try {
-      await conn.reducers.stop_microprocess(codeId);
+      conn.reducers.stopMicroprocess(codeId);
       console.log(`Stopped microprocess ${codeId}`);
     } catch (error) {
       console.error('Error stopping microprocess:', error);
@@ -260,25 +260,25 @@ function App() {
     return (
       <div style={styles.codeList}>
         {microprocessCodes.map(code => {
-          const state = microprocessStates.find(s => s.code_id === code.code_id);
-          const isRunning = state?.is_running || false;
+          const state = microprocessStates.find(s => s.codeId === code.codeId);
+          const isRunning = state?.isRunning || false;
           
           return (
-            <div key={code.code_id} style={styles.codeCard}>
+            <div key={code.codeId} style={styles.codeCard}>
               <div style={styles.codeHeader}>
                 <h3 style={styles.codeName}>{code.name}</h3>
                 <div style={styles.codeButtons}>
                   {!isRunning ? (
                     <button 
                       style={styles.runButton}
-                      onClick={() => startMicroprocess(code.code_id)}
+                      onClick={() => startMicroprocess(code.codeId)}
                     >
                       Run
                     </button>
                   ) : (
                     <button 
                       style={styles.stopButton}
-                      onClick={() => stopMicroprocess(code.code_id)}
+                      onClick={() => stopMicroprocess(code.codeId)}
                     >
                       Stop
                     </button>
@@ -293,9 +293,9 @@ function App() {
                 padding: '5px',
                 fontSize: '12px'
               }}>
-                {code.code_content.length > 200 
-                  ? `${code.code_content.substring(0, 200)}...` 
-                  : code.code_content}
+                {code.codeContent.length > 200 
+                  ? `${code.codeContent.substring(0, 200)}...` 
+                  : code.codeContent}
               </pre>
               
               <div style={styles.codeStatus}>
@@ -304,8 +304,8 @@ function App() {
                 </span>
                 {state && (
                   <span>
-                    L: {state.left_motor_speed.toFixed(1)} | 
-                    R: {state.right_motor_speed.toFixed(1)}
+                    L: {state.leftMotorSpeed.toFixed(1)} | 
+                    R: {state.rightMotorSpeed.toFixed(1)}
                   </span>
                 )}
               </div>

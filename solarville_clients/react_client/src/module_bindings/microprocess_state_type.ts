@@ -3,64 +3,71 @@
 
 /* eslint-disable */
 /* tslint:disable */
+// @ts-nocheck
 import {
   AlgebraicType,
   AlgebraicValue,
   BinaryReader,
   BinaryWriter,
+  CallReducerFlags,
+  ConnectionId,
+  DbConnectionBuilder,
+  DbConnectionImpl,
+  DbContext,
+  ErrorContextInterface,
+  Event,
+  EventContextInterface,
+  Identity,
   ProductType,
   ProductTypeElement,
+  ReducerEventContextInterface,
+  SubscriptionBuilderImpl,
+  SubscriptionEventContextInterface,
   SumType,
   SumTypeVariant,
+  TableCache,
+  TimeDuration,
   Timestamp,
+  deepEqual,
 } from "@clockworklabs/spacetimedb-sdk";
-
-// Import types this type depends on
-import { Timestamp as Timestamp_IGNORE } from "@clockworklabs/spacetimedb-sdk";
+export type MicroprocessState = {
+  stateId: number,
+  codeId: number,
+  leftMotorSpeed: number,
+  rightMotorSpeed: number,
+  errorMessage: string,
+  lastUpdated: Timestamp,
+  isRunning: boolean,
+};
 
 /**
- * Client-side representation of MicroprocessState table from the server
+ * A namespace for generated helper functions.
  */
-export class MicroprocessState {
-  constructor(
-    public state_id: number,
-    public code_id: number,
-    public left_motor_speed: number,
-    public right_motor_speed: number,
-    public error_message: string,
-    public last_updated: Timestamp,
-    public is_running: boolean,
-  ) {}
-
-  static getTypeScriptAlgebraicType(): AlgebraicType {
-    return new ProductType([
-      new ProductTypeElement("state_id", AlgebraicType.createPrimitive("u32")),
-      new ProductTypeElement("code_id", AlgebraicType.createPrimitive("u32")),
-      new ProductTypeElement("left_motor_speed", AlgebraicType.createPrimitive("f32")),
-      new ProductTypeElement("right_motor_speed", AlgebraicType.createPrimitive("f32")),
-      new ProductTypeElement("error_message", AlgebraicType.createPrimitive("String")),
-      new ProductTypeElement("last_updated", AlgebraicType.createPrimitive("Timestamp")),
-      new ProductTypeElement("is_running", AlgebraicType.createPrimitive("Bool")),
+export namespace MicroprocessState {
+  /**
+  * A function which returns this type represented as an AlgebraicType.
+  * This function is derived from the AlgebraicType used to generate this type.
+  */
+  export function getTypeScriptAlgebraicType(): AlgebraicType {
+    return AlgebraicType.createProductType([
+      new ProductTypeElement("stateId", AlgebraicType.createU32Type()),
+      new ProductTypeElement("codeId", AlgebraicType.createU32Type()),
+      new ProductTypeElement("leftMotorSpeed", AlgebraicType.createF32Type()),
+      new ProductTypeElement("rightMotorSpeed", AlgebraicType.createF32Type()),
+      new ProductTypeElement("errorMessage", AlgebraicType.createStringType()),
+      new ProductTypeElement("lastUpdated", AlgebraicType.createTimestampType()),
+      new ProductTypeElement("isRunning", AlgebraicType.createBoolType()),
     ]);
   }
 
-  static fromAlgebraicValue(value: AlgebraicValue): MicroprocessState {
-    const elements = value.getElementsOfProductValue();
-    const state_id = elements[0].getValueAsU32();
-    const code_id = elements[1].getValueAsU32();
-    const left_motor_speed = elements[2].getValueAsF32();
-    const right_motor_speed = elements[3].getValueAsF32();
-    const error_message = elements[4].getValueAsString();
-    const last_updated = elements[5].getValueAsTimestamp();
-    const is_running = elements[6].getValueAsBool();
-    return new MicroprocessState(
-      state_id, 
-      code_id, 
-      left_motor_speed, 
-      right_motor_speed, 
-      error_message, 
-      last_updated, 
-      is_running
-    );
+  export function serialize(writer: BinaryWriter, value: MicroprocessState): void {
+    MicroprocessState.getTypeScriptAlgebraicType().serialize(writer, value);
   }
+
+  export function deserialize(reader: BinaryReader): MicroprocessState {
+    return MicroprocessState.getTypeScriptAlgebraicType().deserialize(reader);
+  }
+
 }
+
+

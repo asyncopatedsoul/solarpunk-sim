@@ -31,30 +31,34 @@ import {
   deepEqual,
 } from "@clockworklabs/spacetimedb-sdk";
 
-export type StartMicroprocess = {
-  codeId: number,
+export type AddMicroprocessCode = {
+  name: string,
+  codeContent: string,
+  filePath: string,
 };
 
 /**
  * A namespace for generated helper functions.
  */
-export namespace StartMicroprocess {
+export namespace AddMicroprocessCode {
   /**
   * A function which returns this type represented as an AlgebraicType.
   * This function is derived from the AlgebraicType used to generate this type.
   */
   export function getTypeScriptAlgebraicType(): AlgebraicType {
     return AlgebraicType.createProductType([
-      new ProductTypeElement("codeId", AlgebraicType.createU32Type()),
+      new ProductTypeElement("name", AlgebraicType.createStringType()),
+      new ProductTypeElement("codeContent", AlgebraicType.createStringType()),
+      new ProductTypeElement("filePath", AlgebraicType.createStringType()),
     ]);
   }
 
-  export function serialize(writer: BinaryWriter, value: StartMicroprocess): void {
-    StartMicroprocess.getTypeScriptAlgebraicType().serialize(writer, value);
+  export function serialize(writer: BinaryWriter, value: AddMicroprocessCode): void {
+    AddMicroprocessCode.getTypeScriptAlgebraicType().serialize(writer, value);
   }
 
-  export function deserialize(reader: BinaryReader): StartMicroprocess {
-    return StartMicroprocess.getTypeScriptAlgebraicType().deserialize(reader);
+  export function deserialize(reader: BinaryReader): AddMicroprocessCode {
+    return AddMicroprocessCode.getTypeScriptAlgebraicType().deserialize(reader);
   }
 
 }

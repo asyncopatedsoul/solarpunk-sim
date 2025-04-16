@@ -10,7 +10,8 @@ import { fileURLToPath } from 'url';
 // Configuration
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = path.dirname(__filename);
-const TEMP_DIR = path.join(os.tmpdir(), 'solarville-microprocessor');
+// const TEMP_DIR = path.join(os.tmpdir(), 'solarville-microprocessor');
+const TEMP_DIR = path.join(__dirname, 'temp');
 const PORT = 3100;
 
 // Create temp dir if it doesn't exist
@@ -85,7 +86,10 @@ export function initializeReplServer(): { server: http.Server, io: Server } {
 
     // Create a new REPL session for this client
     const session = createReplSession(socket);
+    // console.log(session);
+
     replSessions.set(socket.id, session);
+    console.log(replSessions);
 
     // Handle client disconnect
     socket.on('disconnect', () => {
@@ -132,8 +136,10 @@ export function initializeReplServer(): { server: http.Server, io: Server } {
  */
 function createReplSession(socket: Socket): ReplSession {
   const sessionId = socket.id;
-  const tempFile = path.join(TEMP_DIR, `repl_${sessionId}_${Date.now()}.py`);
 
+
+  const tempFile = path.join(TEMP_DIR, `repl_${sessionId}_${Date.now()}.py`);
+  console.log(`Creating REPL session for ${sessionId} at ${tempFile}`);
   // Create initial REPL environment file
   const replSetupCode = `
 import sys
@@ -182,21 +188,32 @@ print(json.dumps({"type": "ready", "message": "Python REPL ready!"}), flush=True
 `;
 
   fs.writeFileSync(tempFile, replSetupCode);
+  console.log(tempFile);
 
   // Options for PythonShell
   let options = {
     // mode: "text",
     pythonPath: 'python3',
-    pythonOptions: ['-u'],  // unbuffered stdout
-    scriptPath: TEMP_DIR,
+    pythonOptions: [
+      // '-u', // unbuffered stdout,
+      '-i' // interactive mode
+    ], 
+    // scriptPath: TEMP_DIR,
   };
 
+  PythonShell.defaultOptions = {
+    mode: "text",
+  }
   // Create PythonShell instance
   const pyshell = new PythonShell(tempFile, options);
-
+  // console.log(pyshell);
+  
   // Handle output from Python
   pyshell.on('message', (message: string) => {
+    console.log(`Received message from Python: ${message}`);
+
     try {
+      
       const data = JSON.parse(message) as OutputMessage;
       socket.emit('repl_output', data);
 
@@ -214,6 +231,8 @@ print(json.dumps({"type": "ready", "message": "Python REPL ready!"}), flush=True
         }
       }
     } catch (error) {
+      console.error('Error parsing message from Python:', error);
+      
       socket.emit('repl_output', {
         type: 'output',
         message: message
@@ -223,6 +242,7 @@ print(json.dumps({"type": "ready", "message": "Python REPL ready!"}), flush=True
 
   // Handle errors
   pyshell.on('error', (error: Error) => {
+    console.error('Python error:', error);
     socket.emit('repl_output', {
       type: 'error',
       message: `Python error: ${error.message}`
@@ -231,6 +251,7 @@ print(json.dumps({"type": "ready", "message": "Python REPL ready!"}), flush=True
 
   // Handle process exit
   pyshell.on('close', () => {
+    console.log(`Python process for session ${sessionId} exited`);
     socket.emit('repl_output', {
       type: 'exit',
       message: 'Python process exited'
@@ -238,12 +259,14 @@ print(json.dumps({"type": "ready", "message": "Python REPL ready!"}), flush=True
 
     // Clean up
     if (fs.existsSync(tempFile)) {
-      fs.unlinkSync(tempFile);
+      // fs.unlinkSync(tempFile);
     }
 
     // Remove session
-    replSessions.delete(socket.id);
+    // replSessions.delete(socket.id);
   });
+
+  pyshell.send('debug()');
 
   return {
     pyshell,
@@ -261,6 +284,10 @@ print(json.dumps({"type": "ready", "message": "Python REPL ready!"}), flush=True
  * Execute Python code in the REPL
  */
 function executeCode(socket: Socket, code: string, codeId: number | null = null): void {
+  console.log(`Executing code: ${code} with ID: ${codeId} for session ${socket.id}`);
+  console.log(getActiveSessions());
+  console.log(replSessions)
+
   const session = replSessions.get(socket.id);
   if (!session || !session.pyshell) {
     socket.emit('repl_output', {
