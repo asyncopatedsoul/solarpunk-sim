@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using SpacetimeDB.Types;
 
 namespace Solarville.Spacetime
 {
@@ -165,7 +166,7 @@ namespace Solarville.Spacetime
             availableScripts.Clear();
             
             // Get current player
-            var currentPlayer = conn.Db.Player.Identity().Find(GameManager.LocalIdentity);
+            var currentPlayer = conn.Db.Player.Identity.Find(GameManager.LocalIdentity);
             if (currentPlayer == null)
             {
                 Debug.LogWarning("Cannot load scripts: Local player not found");
@@ -271,8 +272,9 @@ namespace Solarville.Spacetime
                     UpdateStatus($"Loaded script: {code.Name}");
                     
                     // Check if script is running
-                    var state = GameManager.Conn.Db.MicroprocessState.Code_id().Find(code.CodeId);
-                    UpdateRunStopButtons(state?.IsRunning ?? false);
+                    // TODO access MicroprocessorState instance by CodeId
+                    //var state = GameManager.Conn.Db.MicroprocessState.CodeId(code.CodeId);
+                    //UpdateRunStopButtons(state?.IsRunning ?? false);
                 }
             }
         }
@@ -342,14 +344,14 @@ namespace Solarville.Spacetime
                 // If we have an existing code ID, update it
                 if (currentCodeId.HasValue)
                 {
-                    uint codeId = GameManager.Conn.Reducers.SaveMicroprocessCode(name, filePath, content);
+                    GameManager.Conn.Reducers.AddMicroprocessCode(name, filePath, content);
                     UpdateStatus($"Updated script: {name}");
                 }
                 else
                 {
                     // Otherwise create a new one
-                    uint codeId = GameManager.Conn.Reducers.SaveMicroprocessCode(name, filePath, content);
-                    currentCodeId = codeId;
+                    GameManager.Conn.Reducers.AddMicroprocessCode(name, filePath, content);
+                    //currentCodeId = codeId;
                     UpdateStatus($"Saved new script: {name}");
                 }
                 
@@ -492,7 +494,7 @@ namespace Solarville.Spacetime
         private void OnMicroprocessCodeInsert(EventContext context, MicroprocessCode code)
         {
             // Get current player
-            var currentPlayer = GameManager.Conn.Db.Player.Identity().Find(GameManager.LocalIdentity);
+            var currentPlayer = GameManager.Conn.Db.Player.Identity.Find(GameManager.LocalIdentity);
             if (currentPlayer == null)
                 return;
             
@@ -510,7 +512,7 @@ namespace Solarville.Spacetime
         private void OnMicroprocessCodeUpdate(EventContext context, MicroprocessCode oldCode, MicroprocessCode newCode)
         {
             // Get current player
-            var currentPlayer = GameManager.Conn.Db.Player.Identity().Find(GameManager.LocalIdentity);
+            var currentPlayer = GameManager.Conn.Db.Player.Identity.Find(GameManager.LocalIdentity);
             if (currentPlayer == null)
                 return;
             

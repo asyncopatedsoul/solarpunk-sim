@@ -8,8 +8,6 @@ using SpacetimeDB.ClientApi;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-using UnityEngine;
-
 namespace SpacetimeDB.Types
 {
     public sealed partial class RemoteReducers : RemoteBase
@@ -19,8 +17,6 @@ namespace SpacetimeDB.Types
 
         public bool InvokeConnect(ReducerEventContext ctx, Reducer.Connect args)
         {
-            Debug.Log("InvokeConnect");
-            Debug.Log(OnConnect);
             if (OnConnect == null) return false;
             OnConnect(
                 ctx

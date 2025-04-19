@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using SpacetimeDB.Types;
 
 namespace Solarville.Spacetime
 {
@@ -165,7 +166,7 @@ namespace Solarville.Spacetime
             yield return new WaitUntil(() => GameManager.IsConnected() && isInitialized);
             
             // Get the current player
-            var player = GameManager.Conn.Db.Player.Identity().Find(GameManager.LocalIdentity);
+            var player = GameManager.Conn.Db.Player.Identity.Find(GameManager.LocalIdentity);
             if (player == null)
             {
                 Debug.LogError("Cannot create test vehicle: Local player not found");
@@ -182,15 +183,15 @@ namespace Solarville.Spacetime
                 try
                 {
                     // Call the reducer to save the script
-                    uint codeId = GameManager.Conn.Reducers.SaveMicroprocessCode(scriptName, scriptPath, scriptContent);
+                    GameManager.Conn.Reducers.AddMicroprocessCode(scriptName, scriptPath, scriptContent);
                     
                     // Wait a bit for the code to be processed
-                    yield return new WaitForSeconds(0.5f);
+                    //yield return new WaitForSeconds(0.5f);
                     
                     // Start the script
-                    GameManager.Conn.Reducers.StartMicroprocess(codeId);
+                    //GameManager.Conn.Reducers.StartMicroprocess(codeId);
                     
-                    Debug.Log($"Created and started test vehicle with code ID: {codeId}");
+                    //Debug.Log($"Created and started test vehicle with code ID: {codeId}");
                 }
                 catch (Exception ex)
                 {
@@ -288,24 +289,24 @@ namespace Solarville.Spacetime
                     }
                     
                     // Get owner info
-                    var owner = GameManager.Conn.Db.Player.PlayerId().Find(code.OwnerId);
-                    if (owner == null)
-                    {
-                        Debug.LogWarning($"Cannot create vehicle: Owner not found for player ID: {code.OwnerId}");
-                        return;
-                    }
+                    //var owner = GameManager.Conn.Db.Player.PlayerId().Find(code.OwnerId);
+                    //if (owner == null)
+                    //{
+                    //    Debug.LogWarning($"Cannot create vehicle: Owner not found for player ID: {code.OwnerId}");
+                    //    return;
+                    //}
 
                     // Create the vehicle
                     GameObject vehicleObject = Instantiate(vehiclePrefab, vehiclesContainer);
                     
                     // Set initial position and rotation
-                    Vector3 spawnPosition = owner.Position + Vector3.up * 0.5f;
-                    Quaternion spawnRotation = Quaternion.Euler(owner.Rotation);
-                    vehicleObject.transform.position = spawnPosition;
-                    vehicleObject.transform.rotation = spawnRotation;
+                    //Vector3 spawnPosition = owner.Position + Vector3.up * 0.5f;
+                    //Quaternion spawnRotation = Quaternion.Euler(owner.Rotation);
+                    //vehicleObject.transform.position = spawnPosition;
+                    //vehicleObject.transform.rotation = spawnRotation;
                     
-                    // Set name
-                    vehicleObject.name = $"Vehicle_{code.Name}_{state.CodeId}";
+                    //// Set name
+                    //vehicleObject.name = $"Vehicle_{code.Name}_{state.CodeId}";
                     
                     // Get controller component
                     VehicleController controller = vehicleObject.GetComponent<VehicleController>();
@@ -365,9 +366,10 @@ namespace Solarville.Spacetime
 
             try
             {
-                uint codeId = GameManager.Conn.Reducers.SaveMicroprocessCode(name, path, content);
-                Debug.Log($"Saved Python script: {name} with ID: {codeId}");
-                return codeId;
+                GameManager.Conn.Reducers.AddMicroprocessCode(name, path, content);
+                //Debug.Log($"Saved Python script: {name} with ID: {codeId}");
+                //return codeId;
+                return null;
             }
             catch (Exception ex)
             {

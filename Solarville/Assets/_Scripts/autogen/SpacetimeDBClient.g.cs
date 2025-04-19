@@ -21,6 +21,8 @@ namespace SpacetimeDB.Types
         public RemoteTables(DbConnection conn)
         {
             AddTable(LoggedOutPlayer = new(conn));
+            AddTable(MicroprocessCode = new(conn));
+            AddTable(MicroprocessState = new(conn));
             AddTable(Player = new(conn));
             AddTable(UpdatePlayerTimer = new(conn));
             AddTable(WorldConfig = new(conn));
@@ -432,9 +434,14 @@ namespace SpacetimeDB.Types
             var encodedArgs = update.ReducerCall.Args;
             return update.ReducerCall.ReducerName switch
             {
+                "add_microprocess_code" => BSATNHelpers.Decode<Reducer.AddMicroprocessCode>(encodedArgs),
                 "connect" => BSATNHelpers.Decode<Reducer.Connect>(encodedArgs),
                 "disconnect" => BSATNHelpers.Decode<Reducer.Disconnect>(encodedArgs),
                 "register_player" => BSATNHelpers.Decode<Reducer.RegisterPlayer>(encodedArgs),
+                "start_microprocess" => BSATNHelpers.Decode<Reducer.StartMicroprocess>(encodedArgs),
+                "stop_microprocess" => BSATNHelpers.Decode<Reducer.StopMicroprocess>(encodedArgs),
+                "update_microprocess_code" => BSATNHelpers.Decode<Reducer.UpdateMicroprocessCode>(encodedArgs),
+                "update_microprocess_state" => BSATNHelpers.Decode<Reducer.UpdateMicroprocessState>(encodedArgs),
                 "update_player_position" => BSATNHelpers.Decode<Reducer.UpdatePlayerPosition>(encodedArgs),
                 "update_player_positions" => BSATNHelpers.Decode<Reducer.UpdatePlayerPositions>(encodedArgs),
                 var reducer => throw new ArgumentOutOfRangeException("Reducer", $"Unknown reducer {reducer}")
@@ -458,9 +465,14 @@ namespace SpacetimeDB.Types
             var eventContext = (ReducerEventContext)context;
             return reducer switch
             {
+                Reducer.AddMicroprocessCode args => Reducers.InvokeAddMicroprocessCode(eventContext, args),
                 Reducer.Connect args => Reducers.InvokeConnect(eventContext, args),
                 Reducer.Disconnect args => Reducers.InvokeDisconnect(eventContext, args),
                 Reducer.RegisterPlayer args => Reducers.InvokeRegisterPlayer(eventContext, args),
+                Reducer.StartMicroprocess args => Reducers.InvokeStartMicroprocess(eventContext, args),
+                Reducer.StopMicroprocess args => Reducers.InvokeStopMicroprocess(eventContext, args),
+                Reducer.UpdateMicroprocessCode args => Reducers.InvokeUpdateMicroprocessCode(eventContext, args),
+                Reducer.UpdateMicroprocessState args => Reducers.InvokeUpdateMicroprocessState(eventContext, args),
                 Reducer.UpdatePlayerPosition args => Reducers.InvokeUpdatePlayerPosition(eventContext, args),
                 Reducer.UpdatePlayerPositions args => Reducers.InvokeUpdatePlayerPositions(eventContext, args),
                 _ => throw new ArgumentOutOfRangeException("Reducer", $"Unknown reducer {reducer}")

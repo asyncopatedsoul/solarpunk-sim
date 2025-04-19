@@ -76,3 +76,5 @@ Build/
 
 obj~
 bin~
+
+mono_crash*
