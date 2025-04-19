@@ -7,6 +7,8 @@ import { DbConnection, ErrorContext, MicroprocessCode, MicroprocessState } from 
 import { Identity } from '@clockworklabs/spacetimedb-sdk';
 import ReplInterface from './components/ReplInterface';
 
+import Basic from './components/EmbeddedVue';
+
 function App() {
   console.log('App.tsx loaded');
   
@@ -325,7 +327,7 @@ function App() {
           {connected ? 'Connected' : 'Disconnected'}
         </div>
       </div>
-
+      <Basic />
       <div style={styles.tabs}>
         <div 
           style={{

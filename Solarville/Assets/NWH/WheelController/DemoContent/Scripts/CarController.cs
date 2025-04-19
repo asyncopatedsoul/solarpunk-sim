@@ -117,8 +117,8 @@ namespace NWH.WheelController3D
         {
             base.FixedUpdate();
             
-            xAxis = Input.GetAxis("Horizontal");
-            yAxis = Input.GetAxis("Vertical");
+            xAxis = Input.GetAxis("Movement X");
+            yAxis = Input.GetAxis("Movement Y");
             bool spaceHeld = Input.GetKey(KeyCode.Space);
             smoothXAxis = Mathf.SmoothDamp(smoothXAxis, xAxis, ref xAxisVelocity, 0.12f);
 
