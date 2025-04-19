@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import { fileURLToPath } from 'url';
-import { initializeReplServer, getActiveSessions, closeSession } from './repl.js';
+import { initializeReplServer, getActiveSessions, closeSession, setSpacetimeDbClient } from './repl.js';
 
 // Configuration
 const SERVER_URL = 'http://127.0.0.1:3000';
@@ -53,6 +53,9 @@ async function initializeSpacetimeClient() {
 function handleConnect(identity) {
   console.log('Connected to SpacetimeDB!');
   console.log('Identity:', identity);
+
+  // Set the SpacetimeDB client for the REPL server
+  setSpacetimeDbClient(spacetimeClient);
 
   // Set up event listeners for our tables
   spacetimeClient.on('microprocess_code/insert', handleCodeInsert);
