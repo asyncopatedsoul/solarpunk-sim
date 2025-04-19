@@ -6,18 +6,19 @@ import './App.css';
 import { DbConnection, ErrorContext, MicroprocessCode, MicroprocessState } from './module_bindings';
 import { Identity } from '@clockworklabs/spacetimedb-sdk';
 import ReplInterface from './components/ReplInterface';
+import RemoteControlCarWrapper from './components/RemoteControlCarWrapper';
 
 import Basic from './components/EmbeddedVue';
 
 function App() {
   console.log('App.tsx loaded');
-  
+
   const [connected, setConnected] = useState<boolean>(false);
   const [identity, setIdentity] = useState<Identity | null>(null);
   const [conn, setConn] = useState<DbConnection | null>(null);
   const [microprocessCodes, setMicroprocessCodes] = useState<MicroprocessCode[]>([]);
   const [microprocessStates, setMicroprocessStates] = useState<MicroprocessState[]>([]);
-  const [selectedTab, setSelectedTab] = useState<'repl' | 'codes'>('repl');
+  const [selectedTab, setSelectedTab] = useState<'repl' | 'codes' | 'remote'>('repl');
 
   useEffect(() => {
     const subscribeToQueries = (conn: DbConnection, queries: string[]) => {
@@ -50,7 +51,7 @@ function App() {
 
       // Subscribe to our tables
       subscribeToQueries(conn, [
-        'SELECT * FROM microprocess_code', 
+        'SELECT * FROM microprocess_code',
         'SELECT * FROM microprocess_state'
       ]);
 
@@ -62,14 +63,14 @@ function App() {
 
       conn.db.microprocessCode.onUpdate((oldCode, newCode) => {
         console.log('Microprocess code updated:', newCode);
-        // setMicroprocessCodes(prev => 
+        // setMicroprocessCodes(prev =>
         //   prev.map(code => code.codeId === newCode.codeId ? newCode : code)
         // );
       });
 
       conn.db.microprocessCode.onDelete((code) => {
         console.log('Microprocess code deleted:', code);
-        // setMicroprocessCodes(prev => 
+        // setMicroprocessCodes(prev =>
         //   prev.filter(c => c.codeId !== code.codeId)
         // );
       });
@@ -81,7 +82,7 @@ function App() {
 
       conn.db.microprocessState.onUpdate((oldState, newState) => {
         console.log('Microprocess state updated:', newState);
-        // setMicroprocessStates(prev => 
+        // setMicroprocessStates(prev =>
         //   prev.map(state => state.codeId === newState.codeId ? newState : state)
         // );
       });
@@ -228,7 +229,7 @@ function App() {
   // Function to start a microprocess
   const startMicroprocess = async (codeId: number) => {
     if (!conn) return;
-    
+
     try {
       conn.reducers.startMicroprocess(codeId);
       console.log(`Started microprocess ${codeId}`);
@@ -240,7 +241,7 @@ function App() {
   // Function to stop a microprocess
   const stopMicroprocess = async (codeId: number) => {
     if (!conn) return;
-    
+
     try {
       conn.reducers.stopMicroprocess(codeId);
       console.log(`Stopped microprocess ${codeId}`);
@@ -264,21 +265,21 @@ function App() {
         {microprocessCodes.map(code => {
           const state = microprocessStates.find(s => s.codeId === code.codeId);
           const isRunning = state?.isRunning || false;
-          
+
           return (
             <div key={code.codeId} style={styles.codeCard}>
               <div style={styles.codeHeader}>
                 <h3 style={styles.codeName}>{code.name}</h3>
                 <div style={styles.codeButtons}>
                   {!isRunning ? (
-                    <button 
+                    <button
                       style={styles.runButton}
                       onClick={() => startMicroprocess(code.codeId)}
                     >
                       Run
                     </button>
                   ) : (
-                    <button 
+                    <button
                       style={styles.stopButton}
                       onClick={() => stopMicroprocess(code.codeId)}
                     >
@@ -287,26 +288,26 @@ function App() {
                   )}
                 </div>
               </div>
-              
-              <pre style={{ 
-                maxHeight: '100px', 
-                overflow: 'auto', 
+
+              <pre style={{
+                maxHeight: '100px',
+                overflow: 'auto',
                 backgroundColor: '#f0f0f0',
                 padding: '5px',
                 fontSize: '12px'
               }}>
-                {code.codeContent.length > 200 
-                  ? `${code.codeContent.substring(0, 200)}...` 
+                {code.codeContent.length > 200
+                  ? `${code.codeContent.substring(0, 200)}...`
                   : code.codeContent}
               </pre>
-              
+
               <div style={styles.codeStatus}>
                 <span style={isRunning ? styles.running : styles.stopped}>
                   {isRunning ? 'Running' : 'Stopped'}
                 </span>
                 {state && (
                   <span>
-                    L: {state.leftMotorSpeed.toFixed(1)} | 
+                    L: {state.leftMotorSpeed.toFixed(1)} |
                     R: {state.rightMotorSpeed.toFixed(1)}
                   </span>
                 )}
@@ -329,7 +330,7 @@ function App() {
       </div>
       <Basic />
       <div style={styles.tabs}>
-        <div 
+        <div
           style={{
             ...styles.tab,
             ...(selectedTab === 'repl' ? styles.activeTab : {})
@@ -338,7 +339,7 @@ function App() {
         >
           Python REPL
         </div>
-        <div 
+        <div
           style={{
             ...styles.tab,
             ...(selectedTab === 'codes' ? styles.activeTab : {})
@@ -347,12 +348,23 @@ function App() {
         >
           Saved Scripts ({microprocessCodes.length})
         </div>
+        <div
+          style={{
+            ...styles.tab,
+            ...(selectedTab === 'remote' ? styles.activeTab : {})
+          }}
+          onClick={() => setSelectedTab('remote')}
+        >
+          Remote Control Car
+        </div>
       </div>
 
       {selectedTab === 'repl' ? (
         <ReplInterface dbConnection={conn} height="500px" />
-      ) : (
+      ) : selectedTab === 'codes' ? (
         renderCodeList()
+      ) : (
+        <RemoteControlCarWrapper />
       )}
     </div>
   );
