@@ -1,3 +1,8 @@
+## Project Instructions
+Initialize codemcp with '/Users/michael.garrido/Documents/GitHub/solarpunk-sim/'
+
+You are managing a codebase for a full-stack simulation of embedded systems in a real-time multiplayer sandbox: firmware as python processes, state and user-generated source code synchronization through SpacetimeDB, user-generated interface to embedded system through web app, and physics/environment simulation through Unity. 
+
 ##
 let's create a small test for multiplayer character sync through Spacetime DB.
 
@@ -19,3 +24,15 @@ here is the system architecture:
 
 ## 
 Extend the React app in solarville_clients/react_client/src/App.tsx to implement a microprocess code editor like in Solarville/Assets/_Scripts/Spacetime/CodeEditorUI.cs. Also extend the microprocess simulation manager in solarville_clients/nodejs_client/src/index.js with an option to open a Python REPL process that has a REPL interface in the React app. 
+
+##
+create a Vue component in solarville_clients/react_client/src/components for a remote control interface to a simulated remote control car in Unity and the simulation of the remote control car's firmware in python. 
+
+the Vue component listens for keyboard input (W/S for forward/reverse, A/D for steering left/right, space for break) and shows the active inputs in a toggled overlay view. the Vue component also provides touch compatible virtual joysticks (left joystick for forward/reverse, right joystick for steering left/right). 
+all input listeners call this vue component is presented full screen from a new button in solarville_clients/react_client/src/App.tsx. provide a button to close the fullscreen view.
+
+##
+in solarville_clients/nodejs_client:
+- create a new microprocess state in SpacetimeDB when REPL websocket connects
+- delete the microprocess state when the REPL websocket disconnects
+- on receiving message of simulated firmware in python process stdout, translate that message into updating the active microprocess state in spacetimeDB

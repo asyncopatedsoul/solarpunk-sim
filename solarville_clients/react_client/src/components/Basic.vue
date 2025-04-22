@@ -56,7 +56,6 @@ export default {
         return {
             myTemplateString: templateString,
             scriptString: scriptString,
-
         };
     }
 };

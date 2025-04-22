@@ -27,6 +27,9 @@ spacetime generate --lang typescript --out-dir ../solarville_clients/nodejs_clie
 ### for ReactJS client
 spacetime generate --lang typescript --out-dir ../solarville_clients/react_client/src/module_bindings
 
+### for all clients
+spacetime generate --lang typescript --out-dir ../solarville_clients/react_client/src/module_bindings && spacetime generate --lang typescript --out-dir ../solarville_clients/nodejs_client/src/module_bindings && spacetime generate --lang csharp --out-dir ../Solarville/Assets/_Scripts/autogen
+
 spacetime publish --server local solarville
 
 ## Run full system
