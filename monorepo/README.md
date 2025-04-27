@@ -31,6 +31,8 @@ The project consists of several key components:
 - Communicates with SpacetimeDB for state updates
 - Handles process lifecycle and error management
 - Provides API endpoints for system control
+- Supports multiple Python execution modes (single process, multi-process, multi-thread, and Pyodide)
+- Provides WebSocket API for REPL and global state observation
 
 ### Unity Client (`/unity-client`)
 
@@ -43,7 +45,8 @@ The project consists of several key components:
 
 - **Remote Control**: Browser-based control interface for robots
 - **Display Simulation**: LVGL-based UI simulations for robot displays
-- Built with React and TypeScript
+- **Creator Tools**: Python code editor, REPL console, and global state visualization
+- Built with React and Svelte
 - Can be embedded in Unity or used standalone
 
 ### MicroPython Runtime (`/micropython-runtime`)
@@ -52,6 +55,7 @@ The project consists of several key components:
 - Provides APIs for robot control and sensing
 - Supports LVGL for UI development
 - Runtime environment for user-defined scripts
+- Multiple execution modes (single process, multi-process, multi-thread)
 
 ## Setup and Installation
 
@@ -120,6 +124,51 @@ Alternatively, you can use the provided script to start all components:
 ```
 ./start_dev.sh
 ```
+
+## Running Creator Tools Web App and Node.js Server (Development)
+
+For development and testing of the Python execution features, you can run just the creator-tools web app and Node.js server:
+
+1. Start the Node.js server:
+   ```bash
+   cd monorepo/node-server
+   npm install  # Only needed the first time or when dependencies change
+   npm run dev  # Starts the server with hot-reloading using nodemon
+   ```
+   
+   The Node.js server will run on http://localhost:3001 by default.
+
+2. Start the creator-tools web app:
+   ```bash
+   cd monorepo/web-clients/creator-tools
+   npm install  # Only needed the first time or when dependencies change
+   npm run dev  # Starts the SvelteKit dev server
+   ```
+   
+   The creator-tools web app will run on http://localhost:5173 by default.
+
+3. Open your browser and navigate to http://localhost:5173/demo to access the demo pages.
+
+4. Click on the "Python Executor" demo to test the Python code execution features:
+   - Edit Python code in the editor
+   - Select different execution modes (single process, multi-process, multi-thread, Pyodide)
+   - Start/stop Python execution
+   - Interact with the REPL console
+   - Monitor the global state of the Python execution
+
+### Execution Modes
+
+The creator-tools support multiple execution modes for Python code:
+
+- **Single Process**: Executes code in a single Python process (default mode)
+- **Multi-Process**: Executes code in multiple Python processes (better for CPU-intensive tasks)
+- **Multi-Thread**: Executes code in multiple threads within a single Python process (better for I/O-bound tasks)
+- **Pyodide**: Executes code in the browser using WebAssembly (experimental)
+
+Note: REPL commands work differently depending on the execution mode:
+- In single process and multi-thread modes, REPL commands interact with the Python global context
+- In multi-process mode, REPL commands are not supported (due to process isolation)
+- In Pyodide mode, REPL commands execute in the browser's WebAssembly environment
 
 ## Creating Your First Robot
 
@@ -190,7 +239,8 @@ def loop():
 │
 ├── web-clients/            # Web applications
 │   ├── remote-control/     # Remote control interface
-│   └── display-simulation/ # Display simulation interfaces
+│   ├── display-simulation/ # Display simulation interfaces
+│   └── creator-tools/      # Python code editor and execution tools
 │
 ├── micropython-runtime/    # MicroPython environment
 │   ├── firmware/           # Core firmware code
@@ -219,4 +269,8 @@ This project uses the following open-source libraries:
 - [MicroPython](https://micropython.org/)
 - [LVGL](https://lvgl.io/)
 - [React](https://reactjs.org/)
+- [Svelte](https://svelte.dev/)
 - [Unity](https://unity.com/)
+- [CodeJar](https://github.com/antonmedv/codejar)
+- [Prism](https://prismjs.com/)
+- [Pyodide](https://pyodide.org/)

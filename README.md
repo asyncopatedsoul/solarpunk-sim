@@ -24,6 +24,9 @@ spacetime generate --lang csharp --out-dir ../Solarville/Assets/_Scripts/autogen
 ### for NodeJS client
 spacetime generate --lang typescript --out-dir ../solarville_clients/nodejs_client/src/module_bindings
 
+### for NodeJS client 2
+spacetime generate --lang typescript --out-dir ../monorepo/node-server/src/module_bindings
+
 ### for ReactJS client
 spacetime generate --lang typescript --out-dir ../solarville_clients/react_client/src/module_bindings
 

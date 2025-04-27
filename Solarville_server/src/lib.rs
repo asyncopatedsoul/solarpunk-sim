@@ -55,6 +55,7 @@ pub struct MicroprocessState {
     pub error_message: String,
     pub last_updated: spacetimedb::Timestamp,
     pub is_running: bool,
+    pub execution_mode: String,
 }
 
 #[spacetimedb::table(name = update_player_timer, scheduled(update_player_positions))]
@@ -237,6 +238,7 @@ pub fn update_microprocess_code(ctx: &ReducerContext, name: String, file_path: S
             error_message: "Awaiting execution".to_string(),
             last_updated: ctx.timestamp,
             is_running: false,
+            execution_mode: "single_process".to_string(),
         })?;
         
         log::info!("Created new microprocessor code: {} with ID: {}", code.name, code.code_id);
@@ -251,7 +253,8 @@ pub fn update_microprocess_state(
     left_motor_speed: f32, 
     right_motor_speed: f32, 
     error_message: String, 
-    is_running: bool
+    is_running: bool,
+    execution_mode: String
 ) -> Result<(), String> {
     // Ensure code exists
     let code = ctx.db.microprocess_code().iter()
@@ -281,6 +284,7 @@ pub fn update_microprocess_state(
             error_message,
             last_updated: ctx.timestamp,
             is_running,
+            execution_mode: execution_mode,
         })?;
         log::info!("Created new microprocessor state for code_id: {}", code_id);
     }
@@ -317,6 +321,7 @@ pub fn start_microprocess(ctx: &ReducerContext, code_id: u32) -> Result<(), Stri
             error_message: "Starting execution".to_string(),
             last_updated: ctx.timestamp,
             is_running: true,
+            execution_mode: "single_process".to_string(),
         })?;
         log::info!("Created and started microprocessor state for code_id: {}", code_id);
     }

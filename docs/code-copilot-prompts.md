@@ -60,4 +60,13 @@ With that project context, design a project structure for a monorepo implementin
 how to setup a web app with SvelteKit, shadcn, playbook, and websocket client to manage the Python source code and multithreaded and/or multiprocess execution of that source code in the NodeJS server?
 
 #
-with the project scope defined at _ and the project structure at _ 
+with the project scope defined at monorepo/docs/architecture/overview.md and the project structure at monorepo/ implement the following features across monorepo/node-server, monorepo/web-clients/creator-tools:
+- in web app, provide views per Python source code and process to edit Python code executed by the NodeJS server, a Python REPL console to interact with the NodeJS-managed Python process over websocket, a reactive view of the wrapped and observed Python process global state 
+- in web app, provide options for testing performance of managed Python processes:  to execute the source code in Pyodide with single thread and single process, in Python as single process per source file executed, or in Python as thread per source file executed in a single process with 
+- in the NodeJS server, receive the different Python execution configurations from web app and spawn multiple processes or threads accordingly
+
+##
+update documentation at monorepo/README.md with instructions to run the web app at monorepo/web-clients/creator-tools and NodeJS server at monorepo/node-server for development and testing
+
+##
+update the implementation of SpacetimeDB client in monorepo/node-server/src/index.js to match the implementation at solarville_clients/nodejs_client/src/index.ts
