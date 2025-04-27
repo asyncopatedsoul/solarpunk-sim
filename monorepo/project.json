@@ -1,0 +1,102 @@
+{
+  "name": "robotics-simulation-platform",
+  "version": "0.1.0",
+  "description": "A full-stack demo for simulating robots and IoT devices controlled by player-defined Python scripts",
+  "components": {
+    "spacetime-server": {
+      "description": "SpacetimeDB server for synchronizing state",
+      "language": "Rust",
+      "dependencies": ["spacetimedb"]
+    },
+    "node-server": {
+      "description": "Node.js server for managing Python processes",
+      "language": "JavaScript",
+      "dependencies": ["express", "python-shell", "spacetimedb-sdk"]
+    },
+    "unity-client": {
+      "description": "Unity client for 3D visualization",
+      "language": "C#",
+      "dependencies": ["spacetimedb-sdk-unity"]
+    },
+    "web-clients": {
+      "description": "Web applications for remote control and displays",
+      "language": "TypeScript/React",
+      "dependencies": ["react", "spacetimedb-sdk"]
+    },
+    "micropython-runtime": {
+      "description": "MicroPython environment for robot firmware",
+      "language": "Python",
+      "dependencies": ["micropython", "lvgl"]
+    }
+  },
+  "integrations": [
+    {
+      "source": "spacetime-server",
+      "target": "node-server",
+      "description": "Node.js server connects to SpacetimeDB to sync state"
+    },
+    {
+      "source": "spacetime-server",
+      "target": "unity-client",
+      "description": "Unity client connects to SpacetimeDB to sync state"
+    },
+    {
+      "source": "spacetime-server",
+      "target": "web-clients",
+      "description": "Web clients connect to SpacetimeDB to sync state"
+    },
+    {
+      "source": "node-server",
+      "target": "micropython-runtime",
+      "description": "Node.js server manages MicroPython processes"
+    },
+    {
+      "source": "unity-client",
+      "target": "web-clients",
+      "description": "Unity client embeds web views for UI"
+    },
+    {
+      "source": "micropython-runtime",
+      "target": "unity-client",
+      "description": "MicroPython scripts control Unity objects"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "line-following-robot",
+      "description": "A robot that follows a line on the floor using sensors",
+      "components": ["spacetime-server", "node-server", "unity-client", "micropython-runtime"]
+    },
+    {
+      "name": "robot-battle",
+      "description": "Multiple robots compete in a battle arena",
+      "components": ["spacetime-server", "node-server", "unity-client", "web-clients", "micropython-runtime"]
+    },
+    {
+      "name": "iot-smart-home",
+      "description": "Simulate IoT devices in a smart home environment",
+      "components": ["spacetime-server", "node-server", "unity-client", "web-clients", "micropython-runtime"]
+    }
+  ],
+  "development": {
+    "required-tools": [
+      "node.js (>= 16.x)",
+      "python (>= 3.9)",
+      "unity (>= 2022.3)",
+      "rust (>= 1.65)",
+      "spacetimedb-cli (>= 0.8.0)"
+    ],
+    "start-commands": {
+      "spacetime-server": "cd spacetime-server && spacetime serve",
+      "node-server": "cd node-server && npm start",
+      "web-clients": "cd web-clients && npm start",
+      "all": "./start_dev.sh"
+    }
+  },
+  "documentation": {
+    "architecture": "docs/architecture.md",
+    "api": "docs/api.md",
+    "tutorials": "docs/tutorials",
+    "examples": "docs/examples"
+  }
+}

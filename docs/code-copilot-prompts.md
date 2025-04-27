@@ -36,3 +36,28 @@ in solarville_clients/nodejs_client:
 - create a new microprocess state in SpacetimeDB when REPL websocket connects
 - delete the microprocess state when the REPL websocket disconnects
 - on receiving message of simulated firmware in python process stdout, translate that message into updating the active microprocess state in spacetimeDB
+
+
+#
+Here is project context for creating a full-stack demo for integrating the following components of a robotics simulation controlled by player-defined Python scripts: 
+- a SpacetimeDB server for syncing simulation state, script source code, and script execution process management
+- interactive Unity game entities controlled by Python scripts, ex. player-controlled robot or AI robot
+- static Unity game objects spawned/manipulated/destroyed by Python scripts, ex. obstacles, consumables
+- a web app presented in a Unity-embedded web view in screen space overlay or external web browser, ex. remote control UI for any of the robots
+- multiple web apps/pages presented in a Unity-embedded web view for simulating a display/touchscreen, ex. an LCD for robot's face or touchscreen for game world characters or in-world billboards or player's screen overlays showing simulation state
+- a NodeJS server managing all the Python script processes
+
+The player defines scripts that control all aspects of the simulation including:
+- robot firmware on simulated microprocessor running Micropython
+- setting up a simlulation scenario of dynamic and static game world entities
+- managing the global simulation state for that scenario, ex. the rules and status of a minigame for robot racing or battle
+- presenting UI in LVGL for Micropython for in-world displays or screen overlay widgets
+
+With that project context, design a project structure for a monorepo implementing all the components. Add create the folders of the project structure within local path './monorepo'
+
+
+#
+how to setup a web app with SvelteKit, shadcn, playbook, and websocket client to manage the Python source code and multithreaded and/or multiprocess execution of that source code in the NodeJS server?
+
+#
+with the project scope defined at _ and the project structure at _ 

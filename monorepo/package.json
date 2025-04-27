@@ -1,0 +1,21 @@
+{
+  "name": "robotics-simulation-platform",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "node-server",
+    "web-clients/remote-control",
+    "web-clients/display-simulation",
+    "web-clients/shared"
+  ],
+  "scripts": {
+    "start:node-server": "yarn workspace node-server start",
+    "start:remote-control": "yarn workspace remote-control start",
+    "start:display-simulation": "yarn workspace display-simulation start",
+    "build:all-web": "yarn workspace remote-control build && yarn workspace display-simulation build",
+    "test": "yarn workspaces run test"
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.1"
+  }
+}
