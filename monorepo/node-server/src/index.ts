@@ -155,12 +155,12 @@ function handleConnect(conn: DbConnection, identity: Identity, token: string): v
 
   // Set up subscriptions for all tables
   const queries: string[] = [
-    'SELECT * FROM MicroprocessCode',
-    'SELECT * FROM MicroprocessState',
-    'SELECT * FROM Robot',
-    'SELECT * FROM GameObject',
-    'SELECT * FROM Player',
-    'SELECT * FROM Scenario'
+    'SELECT * FROM microprocess_code',
+    'SELECT * FROM microprocess_state',
+    // 'SELECT * FROM robot',
+    // 'SELECT * FROM game_object',
+    // 'SELECT * FROM player',
+    // 'SELECT * FROM scenario'
   ];
 
   subscribeToQueries(conn, queries);

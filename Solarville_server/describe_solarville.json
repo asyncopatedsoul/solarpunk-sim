@@ -1,0 +1,1065 @@
+{
+  "typespace": {
+    "types": [
+      {
+        "Product": {
+          "elements": [
+            {
+              "name": {
+                "some": "identity"
+              },
+              "algebraic_type": {
+                "Product": {
+                  "elements": [
+                    {
+                      "name": {
+                        "some": "__identity__"
+                      },
+                      "algebraic_type": {
+                        "U256": []
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": {
+                "some": "player_id"
+              },
+              "algebraic_type": {
+                "U32": []
+              }
+            },
+            {
+              "name": {
+                "some": "name"
+              },
+              "algebraic_type": {
+                "String": []
+              }
+            },
+            {
+              "name": {
+                "some": "position"
+              },
+              "algebraic_type": {
+                "Ref": 1
+              }
+            },
+            {
+              "name": {
+                "some": "rotation"
+              },
+              "algebraic_type": {
+                "Ref": 1
+              }
+            },
+            {
+              "name": {
+                "some": "last_update"
+              },
+              "algebraic_type": {
+                "Product": {
+                  "elements": [
+                    {
+                      "name": {
+                        "some": "__timestamp_micros_since_unix_epoch__"
+                      },
+                      "algebraic_type": {
+                        "I64": []
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "Product": {
+          "elements": [
+            {
+              "name": {
+                "some": "x"
+              },
+              "algebraic_type": {
+                "F32": []
+              }
+            },
+            {
+              "name": {
+                "some": "y"
+              },
+              "algebraic_type": {
+                "F32": []
+              }
+            },
+            {
+              "name": {
+                "some": "z"
+              },
+              "algebraic_type": {
+                "F32": []
+              }
+            }
+          ]
+        }
+      },
+      {
+        "Product": {
+          "elements": [
+            {
+              "name": {
+                "some": "code_id"
+              },
+              "algebraic_type": {
+                "U32": []
+              }
+            },
+            {
+              "name": {
+                "some": "owner_id"
+              },
+              "algebraic_type": {
+                "U32": []
+              }
+            },
+            {
+              "name": {
+                "some": "name"
+              },
+              "algebraic_type": {
+                "String": []
+              }
+            },
+            {
+              "name": {
+                "some": "file_path"
+              },
+              "algebraic_type": {
+                "String": []
+              }
+            },
+            {
+              "name": {
+                "some": "code_content"
+              },
+              "algebraic_type": {
+                "String": []
+              }
+            },
+            {
+              "name": {
+                "some": "last_updated"
+              },
+              "algebraic_type": {
+                "Product": {
+                  "elements": [
+                    {
+                      "name": {
+                        "some": "__timestamp_micros_since_unix_epoch__"
+                      },
+                      "algebraic_type": {
+                        "I64": []
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "Product": {
+          "elements": [
+            {
+              "name": {
+                "some": "state_id"
+              },
+              "algebraic_type": {
+                "U32": []
+              }
+            },
+            {
+              "name": {
+                "some": "code_id"
+              },
+              "algebraic_type": {
+                "U32": []
+              }
+            },
+            {
+              "name": {
+                "some": "left_motor_speed"
+              },
+              "algebraic_type": {
+                "F32": []
+              }
+            },
+            {
+              "name": {
+                "some": "right_motor_speed"
+              },
+              "algebraic_type": {
+                "F32": []
+              }
+            },
+            {
+              "name": {
+                "some": "error_message"
+              },
+              "algebraic_type": {
+                "String": []
+              }
+            },
+            {
+              "name": {
+                "some": "last_updated"
+              },
+              "algebraic_type": {
+                "Product": {
+                  "elements": [
+                    {
+                      "name": {
+                        "some": "__timestamp_micros_since_unix_epoch__"
+                      },
+                      "algebraic_type": {
+                        "I64": []
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": {
+                "some": "is_running"
+              },
+              "algebraic_type": {
+                "Bool": []
+              }
+            }
+          ]
+        }
+      },
+      {
+        "Product": {
+          "elements": [
+            {
+              "name": {
+                "some": "scheduled_id"
+              },
+              "algebraic_type": {
+                "U64": []
+              }
+            },
+            {
+              "name": {
+                "some": "scheduled_at"
+              },
+              "algebraic_type": {
+                "Sum": {
+                  "variants": [
+                    {
+                      "name": {
+                        "some": "Interval"
+                      },
+                      "algebraic_type": {
+                        "Product": {
+                          "elements": [
+                            {
+                              "name": {
+                                "some": "__time_duration_micros__"
+                              },
+                              "algebraic_type": {
+                                "I64": []
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": {
+                        "some": "Time"
+                      },
+                      "algebraic_type": {
+                        "Product": {
+                          "elements": [
+                            {
+                              "name": {
+                                "some": "__timestamp_micros_since_unix_epoch__"
+                              },
+                              "algebraic_type": {
+                                "I64": []
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "Product": {
+          "elements": [
+            {
+              "name": {
+                "some": "id"
+              },
+              "algebraic_type": {
+                "U32": []
+              }
+            },
+            {
+              "name": {
+                "some": "world_name"
+              },
+              "algebraic_type": {
+                "String": []
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "tables": [
+    {
+      "name": "logged_out_player",
+      "product_type_ref": 0,
+      "primary_key": [
+        0
+      ],
+      "indexes": [
+        {
+          "name": {
+            "some": "logged_out_player_identity_idx_btree"
+          },
+          "accessor_name": {
+            "some": "identity"
+          },
+          "algorithm": {
+            "BTree": [
+              0
+            ]
+          }
+        },
+        {
+          "name": {
+            "some": "logged_out_player_player_id_idx_btree"
+          },
+          "accessor_name": {
+            "some": "player_id"
+          },
+          "algorithm": {
+            "BTree": [
+              1
+            ]
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "name": {
+            "some": "logged_out_player_identity_key"
+          },
+          "data": {
+            "Unique": {
+              "columns": [
+                0
+              ]
+            }
+          }
+        },
+        {
+          "name": {
+            "some": "logged_out_player_player_id_key"
+          },
+          "data": {
+            "Unique": {
+              "columns": [
+                1
+              ]
+            }
+          }
+        }
+      ],
+      "sequences": [
+        {
+          "name": {
+            "some": "logged_out_player_player_id_seq"
+          },
+          "column": 1,
+          "start": {
+            "none": []
+          },
+          "min_value": {
+            "none": []
+          },
+          "max_value": {
+            "none": []
+          },
+          "increment": 1
+        }
+      ],
+      "schedule": {
+        "none": []
+      },
+      "table_type": {
+        "User": []
+      },
+      "table_access": {
+        "Private": []
+      }
+    },
+    {
+      "name": "microprocess_code",
+      "product_type_ref": 2,
+      "primary_key": [
+        0
+      ],
+      "indexes": [
+        {
+          "name": {
+            "some": "microprocess_code_code_id_idx_btree"
+          },
+          "accessor_name": {
+            "some": "code_id"
+          },
+          "algorithm": {
+            "BTree": [
+              0
+            ]
+          }
+        },
+        {
+          "name": {
+            "some": "microprocess_code_owner_id_idx_btree"
+          },
+          "accessor_name": {
+            "some": "owner_id"
+          },
+          "algorithm": {
+            "BTree": [
+              1
+            ]
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "name": {
+            "some": "microprocess_code_code_id_key"
+          },
+          "data": {
+            "Unique": {
+              "columns": [
+                0
+              ]
+            }
+          }
+        }
+      ],
+      "sequences": [
+        {
+          "name": {
+            "some": "microprocess_code_code_id_seq"
+          },
+          "column": 0,
+          "start": {
+            "none": []
+          },
+          "min_value": {
+            "none": []
+          },
+          "max_value": {
+            "none": []
+          },
+          "increment": 1
+        }
+      ],
+      "schedule": {
+        "none": []
+      },
+      "table_type": {
+        "User": []
+      },
+      "table_access": {
+        "Public": []
+      }
+    },
+    {
+      "name": "microprocess_state",
+      "product_type_ref": 3,
+      "primary_key": [
+        0
+      ],
+      "indexes": [
+        {
+          "name": {
+            "some": "microprocess_state_code_id_idx_btree"
+          },
+          "accessor_name": {
+            "some": "code_id"
+          },
+          "algorithm": {
+            "BTree": [
+              1
+            ]
+          }
+        },
+        {
+          "name": {
+            "some": "microprocess_state_state_id_idx_btree"
+          },
+          "accessor_name": {
+            "some": "state_id"
+          },
+          "algorithm": {
+            "BTree": [
+              0
+            ]
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "name": {
+            "some": "microprocess_state_state_id_key"
+          },
+          "data": {
+            "Unique": {
+              "columns": [
+                0
+              ]
+            }
+          }
+        }
+      ],
+      "sequences": [
+        {
+          "name": {
+            "some": "microprocess_state_state_id_seq"
+          },
+          "column": 0,
+          "start": {
+            "none": []
+          },
+          "min_value": {
+            "none": []
+          },
+          "max_value": {
+            "none": []
+          },
+          "increment": 1
+        }
+      ],
+      "schedule": {
+        "none": []
+      },
+      "table_type": {
+        "User": []
+      },
+      "table_access": {
+        "Public": []
+      }
+    },
+    {
+      "name": "player",
+      "product_type_ref": 0,
+      "primary_key": [
+        0
+      ],
+      "indexes": [
+        {
+          "name": {
+            "some": "player_identity_idx_btree"
+          },
+          "accessor_name": {
+            "some": "identity"
+          },
+          "algorithm": {
+            "BTree": [
+              0
+            ]
+          }
+        },
+        {
+          "name": {
+            "some": "player_player_id_idx_btree"
+          },
+          "accessor_name": {
+            "some": "player_id"
+          },
+          "algorithm": {
+            "BTree": [
+              1
+            ]
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "name": {
+            "some": "player_identity_key"
+          },
+          "data": {
+            "Unique": {
+              "columns": [
+                0
+              ]
+            }
+          }
+        },
+        {
+          "name": {
+            "some": "player_player_id_key"
+          },
+          "data": {
+            "Unique": {
+              "columns": [
+                1
+              ]
+            }
+          }
+        }
+      ],
+      "sequences": [
+        {
+          "name": {
+            "some": "player_player_id_seq"
+          },
+          "column": 1,
+          "start": {
+            "none": []
+          },
+          "min_value": {
+            "none": []
+          },
+          "max_value": {
+            "none": []
+          },
+          "increment": 1
+        }
+      ],
+      "schedule": {
+        "none": []
+      },
+      "table_type": {
+        "User": []
+      },
+      "table_access": {
+        "Public": []
+      }
+    },
+    {
+      "name": "update_player_timer",
+      "product_type_ref": 4,
+      "primary_key": [
+        0
+      ],
+      "indexes": [
+        {
+          "name": {
+            "some": "update_player_timer_scheduled_id_idx_btree"
+          },
+          "accessor_name": {
+            "some": "scheduled_id"
+          },
+          "algorithm": {
+            "BTree": [
+              0
+            ]
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "name": {
+            "some": "update_player_timer_scheduled_id_key"
+          },
+          "data": {
+            "Unique": {
+              "columns": [
+                0
+              ]
+            }
+          }
+        }
+      ],
+      "sequences": [
+        {
+          "name": {
+            "some": "update_player_timer_scheduled_id_seq"
+          },
+          "column": 0,
+          "start": {
+            "none": []
+          },
+          "min_value": {
+            "none": []
+          },
+          "max_value": {
+            "none": []
+          },
+          "increment": 1
+        }
+      ],
+      "schedule": {
+        "some": {
+          "name": {
+            "some": "update_player_timer_sched"
+          },
+          "reducer_name": "update_player_positions",
+          "scheduled_at_column": 1
+        }
+      },
+      "table_type": {
+        "User": []
+      },
+      "table_access": {
+        "Private": []
+      }
+    },
+    {
+      "name": "world_config",
+      "product_type_ref": 5,
+      "primary_key": [
+        0
+      ],
+      "indexes": [
+        {
+          "name": {
+            "some": "world_config_id_idx_btree"
+          },
+          "accessor_name": {
+            "some": "id"
+          },
+          "algorithm": {
+            "BTree": [
+              0
+            ]
+          }
+        }
+      ],
+      "constraints": [
+        {
+          "name": {
+            "some": "world_config_id_key"
+          },
+          "data": {
+            "Unique": {
+              "columns": [
+                0
+              ]
+            }
+          }
+        }
+      ],
+      "sequences": [],
+      "schedule": {
+        "none": []
+      },
+      "table_type": {
+        "User": []
+      },
+      "table_access": {
+        "Public": []
+      }
+    }
+  ],
+  "reducers": [
+    {
+      "name": "connect",
+      "params": {
+        "elements": []
+      },
+      "lifecycle": {
+        "some": {
+          "OnConnect": []
+        }
+      }
+    },
+    {
+      "name": "disconnect",
+      "params": {
+        "elements": []
+      },
+      "lifecycle": {
+        "some": {
+          "OnDisconnect": []
+        }
+      }
+    },
+    {
+      "name": "init",
+      "params": {
+        "elements": []
+      },
+      "lifecycle": {
+        "some": {
+          "Init": []
+        }
+      }
+    },
+    {
+      "name": "register_player",
+      "params": {
+        "elements": [
+          {
+            "name": {
+              "some": "name"
+            },
+            "algebraic_type": {
+              "String": []
+            }
+          },
+          {
+            "name": {
+              "some": "position"
+            },
+            "algebraic_type": {
+              "Ref": 1
+            }
+          },
+          {
+            "name": {
+              "some": "rotation"
+            },
+            "algebraic_type": {
+              "Ref": 1
+            }
+          }
+        ]
+      },
+      "lifecycle": {
+        "none": []
+      }
+    },
+    {
+      "name": "start_microprocess",
+      "params": {
+        "elements": [
+          {
+            "name": {
+              "some": "code_id"
+            },
+            "algebraic_type": {
+              "U32": []
+            }
+          }
+        ]
+      },
+      "lifecycle": {
+        "none": []
+      }
+    },
+    {
+      "name": "stop_microprocess",
+      "params": {
+        "elements": [
+          {
+            "name": {
+              "some": "code_id"
+            },
+            "algebraic_type": {
+              "U32": []
+            }
+          }
+        ]
+      },
+      "lifecycle": {
+        "none": []
+      }
+    },
+    {
+      "name": "update_microprocess_code",
+      "params": {
+        "elements": [
+          {
+            "name": {
+              "some": "name"
+            },
+            "algebraic_type": {
+              "String": []
+            }
+          },
+          {
+            "name": {
+              "some": "file_path"
+            },
+            "algebraic_type": {
+              "String": []
+            }
+          },
+          {
+            "name": {
+              "some": "code_content"
+            },
+            "algebraic_type": {
+              "String": []
+            }
+          }
+        ]
+      },
+      "lifecycle": {
+        "none": []
+      }
+    },
+    {
+      "name": "update_microprocess_state",
+      "params": {
+        "elements": [
+          {
+            "name": {
+              "some": "code_id"
+            },
+            "algebraic_type": {
+              "U32": []
+            }
+          },
+          {
+            "name": {
+              "some": "left_motor_speed"
+            },
+            "algebraic_type": {
+              "F32": []
+            }
+          },
+          {
+            "name": {
+              "some": "right_motor_speed"
+            },
+            "algebraic_type": {
+              "F32": []
+            }
+          },
+          {
+            "name": {
+              "some": "error_message"
+            },
+            "algebraic_type": {
+              "String": []
+            }
+          },
+          {
+            "name": {
+              "some": "is_running"
+            },
+            "algebraic_type": {
+              "Bool": []
+            }
+          }
+        ]
+      },
+      "lifecycle": {
+        "none": []
+      }
+    },
+    {
+      "name": "update_player_position",
+      "params": {
+        "elements": [
+          {
+            "name": {
+              "some": "position"
+            },
+            "algebraic_type": {
+              "Ref": 1
+            }
+          },
+          {
+            "name": {
+              "some": "rotation"
+            },
+            "algebraic_type": {
+              "Ref": 1
+            }
+          }
+        ]
+      },
+      "lifecycle": {
+        "none": []
+      }
+    },
+    {
+      "name": "update_player_positions",
+      "params": {
+        "elements": [
+          {
+            "name": {
+              "some": "_timer"
+            },
+            "algebraic_type": {
+              "Ref": 4
+            }
+          }
+        ]
+      },
+      "lifecycle": {
+        "none": []
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": {
+        "scope": [],
+        "name": "DbVector3"
+      },
+      "ty": 1,
+      "custom_ordering": true
+    },
+    {
+      "name": {
+        "scope": [],
+        "name": "MicroprocessCode"
+      },
+      "ty": 2,
+      "custom_ordering": true
+    },
+    {
+      "name": {
+        "scope": [],
+        "name": "MicroprocessState"
+      },
+      "ty": 3,
+      "custom_ordering": true
+    },
+    {
+      "name": {
+        "scope": [],
+        "name": "Player"
+      },
+      "ty": 0,
+      "custom_ordering": true
+    },
+    {
+      "name": {
+        "scope": [],
+        "name": "UpdatePlayerTimer"
+      },
+      "ty": 4,
+      "custom_ordering": true
+    },
+    {
+      "name": {
+        "scope": [],
+        "name": "WorldConfig"
+      },
+      "ty": 5,
+      "custom_ordering": true
+    }
+  ],
+  "misc_exports": [],
+  "row_level_security": []
+}

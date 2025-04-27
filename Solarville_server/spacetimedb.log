@@ -1,0 +1,56 @@
+2025-04-27T09:13:39.921742Z  INFO: src/lib.rs:259: update_microprocess_state with code_id: 123
+2025-04-27T09:13:39.921458Z ERROR: : Code not found
+2025-04-27T09:15:19.746404Z  INFO: src/lib.rs:111: Client disconnected: Identity(c200902a9ea492e8f87f568b927a9058f67b9af51336d2950d0fe15d1d064288)
+2025-04-27T09:15:19.747425Z  INFO: src/lib.rs:116: Player removed: 
+2025-04-27T09:15:43.923379Z  INFO: src/lib.rs:88: Client connected: Identity(c200e40aa092364cb53df5ccc84f193e8ab0ee21e86debf19a9ec43d9ae9995e)
+2025-04-27T09:16:08.869738Z  INFO: src/lib.rs:111: Client disconnected: Identity(c200e40aa092364cb53df5ccc84f193e8ab0ee21e86debf19a9ec43d9ae9995e)
+2025-04-27T09:16:08.869828Z  INFO: src/lib.rs:116: Player removed: 
+2025-04-27T09:16:11.322258Z  INFO: src/lib.rs:88: Client connected: Identity(c200c09ca44dad922d15c79afec5696bfd7df07931393e6368436b59d826b1da)
+2025-04-27T09:28:24.348684Z  INFO: src/lib.rs:259: update_microprocess_state with code_id: 123
+2025-04-27T09:28:24.346841Z ERROR: : Code not found
+2025-04-27T09:34:26.925483Z  INFO: src/lib.rs:259: update_microprocess_state with code_id: 123
+2025-04-27T09:34:26.925415Z ERROR: : Code not found
+2025-04-27T09:38:36.773977Z  INFO: src/lib.rs:111: Client disconnected: Identity(c200c09ca44dad922d15c79afec5696bfd7df07931393e6368436b59d826b1da)
+2025-04-27T09:38:36.774528Z  INFO: src/lib.rs:116: Player removed: 
+2025-04-27T09:38:37.912206Z  INFO: src/lib.rs:88: Client connected: Identity(c2007ea770cf1a25b9a07a248bb967bdd317b1aa0ca305c2050b5f98e5b43f7a)
+2025-04-27T09:38:49.468978Z  INFO: src/lib.rs:259: update_microprocess_state with code_id: 123
+2025-04-27T09:38:49.468833Z ERROR: : Code not found
+2025-04-27T09:43:28.260210Z  INFO: src/lib.rs:111: Client disconnected: Identity(c2007ea770cf1a25b9a07a248bb967bdd317b1aa0ca305c2050b5f98e5b43f7a)
+2025-04-27T09:43:28.260326Z  INFO: src/lib.rs:116: Player removed: 
+2025-04-27T09:43:29.309729Z  INFO: src/lib.rs:88: Client connected: Identity(c200a4b1b5bf1e059fc780b27e47290210150f9f884f0d11458ed8b25807c0fa)
+2025-04-27T09:43:41.948164Z  INFO: src/lib.rs:259: update_microprocess_state with code_id: 123
+2025-04-27T09:43:41.948077Z ERROR: : Code not found
+2025-04-27T09:45:23.730899Z  INFO: src/lib.rs:111: Client disconnected: Identity(c200a4b1b5bf1e059fc780b27e47290210150f9f884f0d11458ed8b25807c0fa)
+2025-04-27T09:45:23.731029Z  INFO: src/lib.rs:116: Player removed: 
+2025-04-27T09:45:24.870520Z  INFO: src/lib.rs:88: Client connected: Identity(c2001a1d7dfe3133135f0604cf9e96e84e0f537974c09a649d87411fe5ade4af)
+2025-04-27T09:50:34.445463Z  INFO: src/lib.rs:111: Client disconnected: Identity(c2001a1d7dfe3133135f0604cf9e96e84e0f537974c09a649d87411fe5ade4af)
+2025-04-27T09:50:34.445720Z  INFO: src/lib.rs:116: Player removed: 
+2025-04-27T09:50:35.474934Z  INFO: src/lib.rs:88: Client connected: Identity(c2002c33654c5b109d8adb50bb05f4d1cb51cffc6ae9671a280d01ec11c475e7)
+2025-04-27T09:50:41.912482Z  INFO: src/lib.rs:259: update_microprocess_state with code_id: 123
+2025-04-27T09:50:41.912317Z ERROR: : Code not found
+2025-04-27T10:14:08.702827Z  INFO: src/lib.rs:259: update_microprocess_state with code_id: 123
+2025-04-27T10:14:08.702405Z ERROR: : Code not found
+2025-04-27T10:20:31.156387Z  INFO: src/lib.rs:111: Client disconnected: Identity(c2002c33654c5b109d8adb50bb05f4d1cb51cffc6ae9671a280d01ec11c475e7)
+2025-04-27T10:20:31.156596Z  INFO: src/lib.rs:116: Player removed: 
+2025-04-27T10:20:32.332726Z  INFO: src/lib.rs:88: Client connected: Identity(c2007d9f8222ae59f46dd7a9e04db4785a8ae971666ee10678690e7a4b31727c)
+2025-04-27T10:21:56.215326Z  INFO: src/lib.rs:259: update_microprocess_state with code_id: 123
+2025-04-27T10:21:56.215245Z ERROR: : Code not found
+2025-04-27T10:21:56.219073Z  INFO: src/lib.rs:259: update_microprocess_state with code_id: 123
+2025-04-27T10:21:56.219052Z ERROR: : Code not found
+2025-04-27T10:22:55.027649Z  INFO: src/lib.rs:111: Client disconnected: Identity(c2007d9f8222ae59f46dd7a9e04db4785a8ae971666ee10678690e7a4b31727c)
+2025-04-27T10:22:55.027827Z  INFO: src/lib.rs:116: Player removed: 
+2025-04-27T10:22:56.177742Z  INFO: src/lib.rs:88: Client connected: Identity(c2009e0d958452421d465b7032a949c914dc89272190b5acc5db295791a54367)
+2025-04-27T10:24:53.273796Z  INFO: src/lib.rs:111: Client disconnected: Identity(c2009e0d958452421d465b7032a949c914dc89272190b5acc5db295791a54367)
+2025-04-27T10:24:53.274122Z  INFO: src/lib.rs:116: Player removed: 
+2025-04-27T10:24:54.432733Z  INFO: src/lib.rs:88: Client connected: Identity(c2008b525ad92c2c20dc9cde501a4761c7287a4e2e387fb184c78739988a4590)
+2025-04-27T10:28:08.270785Z  INFO: src/lib.rs:259: update_microprocess_state with code_id: 123
+2025-04-27T10:28:08.270355Z ERROR: : Code not found
+2025-04-27T10:28:08.290827Z  INFO: src/lib.rs:111: Client disconnected: Identity(c2008b525ad92c2c20dc9cde501a4761c7287a4e2e387fb184c78739988a4590)
+2025-04-27T10:28:08.291099Z  INFO: src/lib.rs:116: Player removed: 
+2025-04-27T10:28:12.821773Z  INFO: src/lib.rs:88: Client connected: Identity(c2003286077d758c7487c3166f4d516306b7aa71dac18d1bcdc3f8f52c0d8fb7)
+2025-04-27T10:30:47.421728Z  INFO: src/lib.rs:111: Client disconnected: Identity(c2003286077d758c7487c3166f4d516306b7aa71dac18d1bcdc3f8f52c0d8fb7)
+2025-04-27T10:30:47.421978Z  INFO: src/lib.rs:116: Player removed: 
+2025-04-27T10:30:48.605519Z  INFO: src/lib.rs:88: Client connected: Identity(c20041167a8d603a9745573eaa68838282a57d0ea46feb45be0974af389daa54)
+2025-04-27T10:32:32.241139Z  INFO: src/lib.rs:111: Client disconnected: Identity(c20041167a8d603a9745573eaa68838282a57d0ea46feb45be0974af389daa54)
+2025-04-27T10:32:32.241228Z  INFO: src/lib.rs:116: Player removed: 
+2025-04-27T10:32:33.191175Z  INFO: src/lib.rs:88: Client connected: Identity(c2008e54150e46b4e822adf9a3d7db9d896e66973fd85280ba40a66f581c0d10)

@@ -11,6 +11,11 @@ from io import StringIO
 import contextlib
 import os
 
+# Global variables
+manager = multiprocessing.Manager()
+global_state = manager.dict()
+output_queue = multiprocessing.Queue()
+
 def load_module_from_file(file_path):
     """Load a Python module from a file path."""
     spec = importlib.util.spec_from_file_location("user_module", file_path)
@@ -49,7 +54,7 @@ def track_globals(module):
 def execute_code_in_process(file_path, process_id, global_state, output_queue):
     """Execute the code in a process and capture output."""
     output_buffer = StringIO()
-    print(f"Executing code at {file_path} in process {process_id}")
+    
     try:
         # Redirect stdout to capture output
         with contextlib.redirect_stdout(output_buffer):
@@ -136,7 +141,6 @@ def main():
                 try:
                     command = input()
                     if command:
-                        print(f"Received command: {command}")
                         # Try to parse the command as JSON
                         try:
                             command_data = json.loads(command)
@@ -184,9 +188,4 @@ def main():
         sys.exit(1)
 
 if __name__ == "__main__":
-    # Global variables MUST be created within this block on some platforms
-    manager = multiprocessing.Manager()
-    global_state = manager.dict()
-    output_queue = multiprocessing.Queue()
-    print(f"Global state: {global_state}")
-    main()
+    main() 

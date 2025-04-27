@@ -256,6 +256,7 @@ pub fn update_microprocess_state(
     is_running: bool,
     execution_mode: String
 ) -> Result<(), String> {
+    log::info!("update_microprocess_state with code_id: {}", code_id);
     // Ensure code exists
     let code = ctx.db.microprocess_code().iter()
     .find(|code| code.code_id == code_id).ok_or("Code not found")?;
@@ -294,6 +295,7 @@ pub fn update_microprocess_state(
 
 #[spacetimedb::reducer]
 pub fn start_microprocess(ctx: &ReducerContext, code_id: u32) -> Result<(), String> {
+    log::info!("start_microprocess with code_id: {}", code_id);
     // Check if code exists and belongs to caller
     let code = ctx.db.microprocess_code().iter()
     .find(|code| code.code_id == code_id).ok_or("Code not found")?;
@@ -331,6 +333,7 @@ pub fn start_microprocess(ctx: &ReducerContext, code_id: u32) -> Result<(), Stri
 
 #[spacetimedb::reducer]
 pub fn stop_microprocess(ctx: &ReducerContext, code_id: u32) -> Result<(), String> {
+    log::info!("stop_microprocess with code_id: {}", code_id);
     // Check if code exists and belongs to caller
     let code = ctx.db.microprocess_code().iter()
     .find(|code| code.code_id == code_id).ok_or("Code not found")?;

@@ -61,11 +61,13 @@
     }
     
     try {
-      socket.send(JSON.stringify({
+        let message = {
         type: 'repl_command',
         codeId,
         command: commandInput
-      }));
+      }
+      console.log(`Sending command: ${JSON.stringify(message)}`);
+      socket.send(JSON.stringify(message));
       
       replOutput += `> ${commandInput}\n`;
       commandInput = '';

@@ -10,9 +10,6 @@ import inspect
 from io import StringIO
 import contextlib
 
-# Global variables
-global_state = {}
-output_buffer = StringIO()
 
 def load_module_from_file(file_path):
     """Load a Python module from a file path."""
@@ -97,6 +94,7 @@ def execute_code_in_thread(file_path, thread_id):
 
 def main():
     """Main entry point for the thread runner."""
+    global global_state, output_buffer
     if len(sys.argv) < 2:
         print(json.dumps({
             "type": "error",
@@ -172,4 +170,7 @@ def main():
         sys.exit(1)
 
 if __name__ == "__main__":
+    # Global variables
+    global_state = {}
+    output_buffer = StringIO()
     main() 
