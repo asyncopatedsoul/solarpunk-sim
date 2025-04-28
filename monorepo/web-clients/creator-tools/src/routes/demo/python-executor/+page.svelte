@@ -41,6 +41,10 @@ def main():
 	let websocketUrl = 'ws://localhost:3001';
 	let errorMessage = '';
 
+    onMount(async () => {
+        console.log('Mounted python-executor');
+    });
+
 	async function startExecution() {
 		try {
 			const response = await fetch(`${apiBaseUrl}/api/process/start`, {

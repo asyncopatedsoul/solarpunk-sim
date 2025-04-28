@@ -84,18 +84,23 @@ class ProcessManager {
             console.log(`Websocket clients: ${this.websocketClients.size}`);
 
             ws.on('message', async (message: Buffer | string) => {
+                console.log(`Received client ${clientId} message: ${message}`);
                 try {
                     const data = JSON.parse(message.toString()) as WebSocketMessage;
 
                     if (data.type === 'repl_command') {
-                        // Handle REPL command
+                        // Handle REPL command 
+                        console.log(this.processes.entries());
                         if (this.processes.has(data.codeId)) {
                             const processStatus = this.processes.get(data.codeId);
                             if (processStatus && processStatus.process) {
-                                processStatus.process.send(JSON.stringify({
-                                    type: 'repl_command',
-                                    command: data.command
-                                }));
+                                // const message = JSON.stringify({
+                                //     type: 'repl_command',
+                                //     command: data.command
+                                // })
+                                const message = data.command;
+                                console.log(`Sending message to process ${processStatus.codeId}: ${message}`);
+                                processStatus.process.send(message);
                             } else {
                                 ws.send(JSON.stringify({
                                     type: 'repl_response',
@@ -141,13 +146,17 @@ class ProcessManager {
      * @param status - The status to broadcast
      */
     broadcastStatus(codeId: number, status: ProcessStatusResponse): void {
+        console.log(`<<< Broadcasting status for code ${codeId}: ${status}`);
+        const message = {
+            type: 'process_status',
+            codeId,
+            status
+        }
         for (const ws of this.websocketClients.values()) {
             if (ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({
-                    type: 'process_status',
-                    codeId,
-                    status
-                }));
+                console.log(`<-- Broadcasting status to client ${ws}`);
+                console.log(`Message: ${JSON.stringify(message)}`);
+                ws.send(JSON.stringify(message));
             }
         }
     }
@@ -158,13 +167,17 @@ class ProcessManager {
      * @param output - The output to broadcast
      */
     broadcastReplOutput(codeId: number, output: string): void {
+        console.log(`<<< Broadcasting REPL output for code ${codeId}: ${output}`);
+        const message = {
+            type: 'repl_output',
+            codeId,
+            output
+        }
         for (const ws of this.websocketClients.values()) {
             if (ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({
-                    type: 'repl_output',
-                    codeId,
-                    output
-                }));
+                console.log(`<-- Broadcasting REPL output to client ${ws}`);
+                console.log(`Message: ${JSON.stringify(message)}`);
+                ws.send(JSON.stringify(message));
             }
         }
     }
@@ -175,15 +188,18 @@ class ProcessManager {
      * @param state - The global state to broadcast
      */
     broadcastGlobalState(codeId: number, state: any): void {
+        console.log(`<<< Broadcasting global state for code ${codeId}: ${state}`);
         this.globalState.set(codeId, state);
-
+        const message = {
+            type: 'global_state',
+            codeId,
+            state
+        }
         for (const ws of this.websocketClients.values()) {
             if (ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({
-                    type: 'global_state',
-                    codeId,
-                    state
-                }));
+                console.log(`<-- Broadcasting global state to client ${ws}`);
+                console.log(`Message: ${JSON.stringify(message)}`);
+                ws.send(JSON.stringify(message));
             }
         }
     }
@@ -380,6 +396,7 @@ def main():
 
             // Handle Python process output
             pyshell.on('message', (message: string) => {
+                console.log(`>>> Received message from process ${codeId}: ${message}`);
                 try {
                     // Try to parse the message as JSON
                     const data = JSON.parse(message);

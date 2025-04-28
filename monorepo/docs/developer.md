@@ -45,6 +45,15 @@ spacetime sql solarville --interactive
 
 > Options: {"mode":"text","pythonPath":"python3","pythonOptions":["-u"],"scriptPath":"/Users/michael.garrido/Documents/GitHub/solarpunk-sim/monorepo/micropython-runtime/firmware","args":["/Users/michael.garrido/Documents/GitHub/solarpunk-sim/monorepo/node-server/scripts/temp/123.py","single_process"]}
 ```
-python monorepo/micropython-runtime/firmware/process_runner.py solarpunk-sim/monorepo/node-server/scripts/temp/123.py single_process
+python monorepo/micropython-runtime/firmware/process_runner.py monorepo/node-server/scripts/temp/123.py single_process
+
+python monorepo/micropython-runtime/firmware/thread_runner.py monorepo/node-server/scripts/temp/123.py single_process
 
 ```
+
+set_motor_speed(0, 0)
+
+ps aux | grep "python.*repl_runner_socket.py"
+ps aux | grep "python.*repl_runner_websocket2.py"
+
+ps aux | grep "python.*repl_websocket_server.py"

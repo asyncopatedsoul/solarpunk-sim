@@ -5,7 +5,7 @@
   import Prism from 'prismjs';
   import 'prismjs/components/prism-python';
   import 'prismjs/themes/prism.css';
-  
+
   export const ssr = false;
   export let code = '';
   export let readOnly = false;
@@ -15,6 +15,7 @@
   let jar;
 
   onMount(() => {
+    console.log('Mounted PythonEditor');
     const highlight = (editor) => {
       editor.textContent = editor.textContent;
       Prism.highlightElement(editor);

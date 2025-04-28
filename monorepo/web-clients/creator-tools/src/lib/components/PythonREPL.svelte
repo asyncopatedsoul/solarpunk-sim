@@ -6,7 +6,7 @@
 
   let socket;
   let replOutput = '';
-  let commandInput = '';
+  let commandInput = 'set_motor_speed(0, 0)';
   let connected = false;
   let errorMessage = '';
 
@@ -99,10 +99,11 @@
   }
 
   $: if (codeId && !socket) {
-    connect();
+    // connect();
   }
 
   onMount(() => {
+    console.log('Mounted PythonREPL');
     if (codeId) {
       connect();
     }

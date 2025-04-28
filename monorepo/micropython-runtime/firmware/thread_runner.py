@@ -106,10 +106,11 @@ def main():
     
     try:
         # Create multiple threads to execute the code
-        num_threads = 3  # Default number of threads
+        num_threads = 1  # Default number of threads
         threads = []
         
         for i in range(num_threads):
+            print(f">>> Starting thread for {file_path}")
             thread = threading.Thread(target=execute_code_in_thread, args=(file_path, i))
             thread.daemon = True
             threads.append(thread)
@@ -129,9 +130,11 @@ def main():
             # Check for input commands
             try:
                 command = input()
+                print(f">>> Received command: {command}")
                 if command:
                     # Try to parse the command as JSON
                     try:
+                        
                         command_data = json.loads(command)
                         if command_data.get("type") == "repl_command":
                             # Execute the command

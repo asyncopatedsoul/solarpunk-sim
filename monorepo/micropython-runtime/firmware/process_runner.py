@@ -106,7 +106,8 @@ def main():
     
     try:
         # Create multiple processes to execute the code
-        num_processes = min(os.cpu_count() or 2, 3)  # Default number of processes (max 3)
+        # num_processes = min(os.cpu_count() or 2, 3)  # Default number of processes (max 3)
+        num_processes = 1
         processes = []
         
         for i in range(num_processes):

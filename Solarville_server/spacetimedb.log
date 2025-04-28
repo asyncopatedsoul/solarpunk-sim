@@ -54,3 +54,34 @@
 2025-04-27T10:32:32.241139Z  INFO: src/lib.rs:111: Client disconnected: Identity(c20041167a8d603a9745573eaa68838282a57d0ea46feb45be0974af389daa54)
 2025-04-27T10:32:32.241228Z  INFO: src/lib.rs:116: Player removed: 
 2025-04-27T10:32:33.191175Z  INFO: src/lib.rs:88: Client connected: Identity(c2008e54150e46b4e822adf9a3d7db9d896e66973fd85280ba40a66f581c0d10)
+2025-04-27T10:46:54.784557Z  INFO: src/lib.rs:111: Client disconnected: Identity(c2008e54150e46b4e822adf9a3d7db9d896e66973fd85280ba40a66f581c0d10)
+2025-04-27T10:46:54.784939Z  INFO: src/lib.rs:116: Player removed: 
+2025-04-27T10:46:55.756371Z  INFO: src/lib.rs:88: Client connected: Identity(c200f8815d3e882fd3a5eac838a377fe662625a88bada359c127642bb6dc985d)
+2025-04-27T10:52:56.717138Z  INFO: src/lib.rs:111: Client disconnected: Identity(c200f8815d3e882fd3a5eac838a377fe662625a88bada359c127642bb6dc985d)
+2025-04-27T10:52:56.717357Z  INFO: src/lib.rs:116: Player removed: 
+2025-04-27T10:52:57.671952Z  INFO: src/lib.rs:88: Client connected: Identity(c200046599cdb1753631471ec4eebc3dfa43b686464b65cb61d992673463c09b)
+2025-04-27T10:58:23.394326Z  INFO: src/lib.rs:111: Client disconnected: Identity(c200046599cdb1753631471ec4eebc3dfa43b686464b65cb61d992673463c09b)
+2025-04-27T10:58:23.394785Z  INFO: src/lib.rs:116: Player removed: 
+2025-04-27T10:58:24.365141Z  INFO: src/lib.rs:88: Client connected: Identity(c20000e7b74d486a47bf1dd4879a14a8febdf4ea33622971b63b88b6775e1931)
+2025-04-27T11:00:11.934717Z  INFO: src/lib.rs:111: Client disconnected: Identity(c20000e7b74d486a47bf1dd4879a14a8febdf4ea33622971b63b88b6775e1931)
+2025-04-27T11:00:11.934972Z  INFO: src/lib.rs:116: Player removed: 
+2025-04-27T11:00:12.987066Z  INFO: src/lib.rs:88: Client connected: Identity(c2000f6a44e1b7fe7cebe7075b938b8ece5aafd1631bc407b9529ecbbde5fbdd)
+2025-04-27T11:02:10.347374Z  INFO: src/lib.rs:111: Client disconnected: Identity(c2000f6a44e1b7fe7cebe7075b938b8ece5aafd1631bc407b9529ecbbde5fbdd)
+2025-04-27T11:02:10.348004Z  INFO: src/lib.rs:116: Player removed: 
+2025-04-27T11:02:11.340421Z  INFO: src/lib.rs:88: Client connected: Identity(c2003ef8b854b577e867908deef79fa725408a47519a799285bc1b04a3f21d0b)
+2025-04-27T11:04:22.946701Z  INFO: src/lib.rs:111: Client disconnected: Identity(c2003ef8b854b577e867908deef79fa725408a47519a799285bc1b04a3f21d0b)
+2025-04-27T11:04:22.947376Z  INFO: src/lib.rs:116: Player removed: 
+2025-04-27T11:04:23.979560Z  INFO: src/lib.rs:88: Client connected: Identity(c200ad8cda34964ff25aa06d5735db37f814a5e14c2e3971aa63aa887053b64c)
+2025-04-27T11:06:08.505145Z  INFO: src/lib.rs:111: Client disconnected: Identity(c200ad8cda34964ff25aa06d5735db37f814a5e14c2e3971aa63aa887053b64c)
+2025-04-27T11:06:08.505789Z  INFO: src/lib.rs:116: Player removed: 
+2025-04-27T11:06:09.519979Z  INFO: src/lib.rs:88: Client connected: Identity(c20031230053c6f2000024fa14446c2dfaf46974b9b66d6fe41de098ff26447b)
+2025-04-27T11:07:18.781882Z  INFO: src/lib.rs:111: Client disconnected: Identity(c20031230053c6f2000024fa14446c2dfaf46974b9b66d6fe41de098ff26447b)
+2025-04-27T11:07:18.782638Z  INFO: src/lib.rs:116: Player removed: 
+2025-04-27T11:07:19.767619Z  INFO: src/lib.rs:88: Client connected: Identity(c20001e2687469098a7345b09d14a9e32b03b9ebad1ca8aee9f5a2307aa63a00)
+2025-04-27T11:08:31.666159Z  INFO: src/lib.rs:111: Client disconnected: Identity(c20001e2687469098a7345b09d14a9e32b03b9ebad1ca8aee9f5a2307aa63a00)
+2025-04-27T11:08:31.666832Z  INFO: src/lib.rs:116: Player removed: 
+2025-04-27T11:08:32.616045Z  INFO: src/lib.rs:88: Client connected: Identity(c200dc88657626fece19e3750bde4d3ae7b8adc954ebc88fc4201b09a6d97a93)
+2025-04-27T12:47:25.714059Z  INFO: src/lib.rs:259: update_microprocess_state with code_id: 123
+2025-04-27T12:47:25.704784Z ERROR: : Code not found
+2025-04-27T12:47:25.730767Z  INFO: src/lib.rs:111: Client disconnected: Identity(c200dc88657626fece19e3750bde4d3ae7b8adc954ebc88fc4201b09a6d97a93)
+2025-04-27T12:47:25.731441Z  INFO: src/lib.rs:116: Player removed: 
