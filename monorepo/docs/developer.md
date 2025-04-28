@@ -50,6 +50,9 @@ python monorepo/micropython-runtime/firmware/process_runner.py monorepo/node-ser
 python monorepo/micropython-runtime/firmware/thread_runner.py monorepo/node-server/scripts/temp/123.py single_process
 
 ```
+run the repl process on Mac Terminal 
+to gracefully exit the repl process, control-c KeyboardInterrupt then control-d exit Interactive console
+
 
 set_motor_speed(0, 0)
 
@@ -57,3 +60,5 @@ ps aux | grep "python.*repl_runner_socket.py"
 ps aux | grep "python.*repl_runner_websocket2.py"
 
 ps aux | grep "python.*repl_websocket_server.py"
+
+git rm --cached -r folder

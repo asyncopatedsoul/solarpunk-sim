@@ -114,7 +114,9 @@ class Robot:
     # async on message from server
     # or during main loop check_state_change
     def set_state_from_server(self, state):
+        print("set_state_from_server: ", state)
         self.state_remote = state
-        self.sensors = state["sensors"]
-
+        self.actuators['motor1'] = state['actuators']['motor1']
+        # self.sensors = state["sensors"]
+        # self.actuators = state["actuators"]
 # my_robot = Robot("Rover")

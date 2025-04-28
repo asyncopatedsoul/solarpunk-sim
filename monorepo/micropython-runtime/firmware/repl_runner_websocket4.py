@@ -14,6 +14,8 @@ import os
 import asyncio
 import websockets
 
+from utils import remove_imports
+
 # --- Configuration ---
 LIBRARY_PATH = "robot.py"
 FILE_PATH = "custom_robot.py"
@@ -32,9 +34,9 @@ ws_connected = False
 snapshot_count = 0
 
 # --- Helper Functions ---
-def load_module_from_file(file_path):
+def load_module_from_file(file_path, module_name="user_module"):
     """Load a Python module from a file path."""
-    spec = importlib.util.spec_from_file_location("user_module", file_path)
+    spec = importlib.util.spec_from_file_location(module_name, file_path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -106,7 +108,7 @@ async def receive_snapshots():
                         data = json.loads(message)
                         print("received data: ", data)
                         if data['type'] == 'state_update':
-                            await snapshot_recv_queue.put(data['state'])
+                            await snapshot_recv_queue.put(data)
                     except websockets.exceptions.ConnectionClosedOK:
                         print("WebSocket connection closed normally.")
                         break
@@ -128,6 +130,41 @@ async def receive_snapshots():
         print("receive_snapshots: asyncio loop is not running.")
 
 
+async def set_state_from_snapshot(data):
+    """Sets the state from a snapshot."""
+    global repl_locals
+    # repl_locals.update(data)
+    print("set_state_from_snapshot: ", data)
+    # print(">>> repl_locals: ", repl_locals)
+    # update the user module
+    # print(">>> globals(): ", globals())
+    # {
+    #     'r': <user_module.Robot object at 0x10309e470>
+    # }
+    target_obj = data['object']
+    target_state = data['state']
+    print("target_obj: ", target_obj)
+    print(len(target_obj))
+    print(type(target_obj))
+    
+    # obj = globals()[target_obj]
+    # print("obj: ", obj)
+    # if (type(obj).__name__ == 'Robot'):
+    #     print("obj is a Robot")
+    #     obj.set_state_from_server(target_state)
+            
+    # if target_obj in globals():
+    if target_obj in repl_locals:
+        print("target_obj in locals(): ", target_obj)
+        # obj = globals()[target_obj]
+        obj = repl_locals[target_obj]
+        print("obj: ", obj)
+        if (type(obj).__name__ == 'Robot'):
+            print("obj is a Robot")
+            obj.set_state_from_server(target_state)
+    else:
+        print("set_state_from_snapshot: unknown object: ", target_obj)
+
 async def process_send_queue():
     """Processes the queue of snapshots to send."""
     global running, asyncio_loop
@@ -148,6 +185,25 @@ async def process_send_queue():
     else:
         print("process_send_queue: asyncio loop is not running.")
 
+async def process_receive_queue():
+    """Processes the queue of snapshots received from the WebSocket."""
+    global running, asyncio_loop
+
+    if asyncio_loop and not asyncio_loop.is_closed():  # Check if loop is running
+        try:
+            while running and not asyncio_loop.is_closed():
+                try:
+                    data = await snapshot_recv_queue.get()
+                    await set_state_from_snapshot(data)
+                except Exception as e:
+                    print(f"Error processing send queue: {e}")
+        except Exception as e:
+            print(f"process_send_queue exception: {e}")
+            traceback.print_exc()
+        finally:
+            print("process_send_queue: Exiting.")
+    else:
+        print("process_send_queue: asyncio loop is not running.")
 
 async def connect_websocket():
     """Connects to the WebSocket server."""
@@ -177,8 +233,10 @@ def repl_thread_function():
     try:
         library_module = load_module_from_file(LIBRARY_PATH)
 
+        imports_to_remove = ["from robot import Robot"]
+        new_filepath = remove_imports(FILE_PATH, imports_to_remove)
         # now load the user module with the modified Robot class
-        user_module = load_module_from_file(FILE_PATH)
+        user_module = load_module_from_file(new_filepath)
 
     except Exception as e:
         print(json.dumps({"type": "error", "error": f"Failed to load module: {e}", "traceback": traceback.format_exc()}))
@@ -192,6 +250,7 @@ def repl_thread_function():
 
     repl_locals = globals().copy()
     repl_locals.update(vars(library_module))
+    
     repl_locals.update(vars(user_module))
 
     # injecting methods into the class
@@ -250,6 +309,7 @@ def run_asyncio_loop():
     tasks = [
         receive_snapshots(),
         process_send_queue(),
+        process_receive_queue(),
     ]
     asyncio.run_coroutine_threadsafe(connect_websocket(), asyncio_loop)  # Start connect_websocket
 

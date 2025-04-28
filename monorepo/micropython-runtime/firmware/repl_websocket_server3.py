@@ -10,7 +10,10 @@ async def send_message_to_client(websocket, message):
     """Sends a JSON message to a specific client."""
     try:
         await websocket.send(json.dumps(message))
-    except (websockets.exceptions.ConnectionClosedOK, websockets.exceptions.ConnectionClosedError):
+    except (
+        websockets.exceptions.ConnectionClosedOK,
+        websockets.exceptions.ConnectionClosedError,
+    ):
         print(f"Connection closed while trying to send: {message}")
 
 
@@ -22,26 +25,44 @@ async def broadcast_message(message):
 
 async def handler(websocket):
     """Handles WebSocket connections and messages."""
+    global counter
     client_id = id(websocket)  # Unique ID for each client
     connected_clients[client_id] = websocket
     print(f"Client {client_id} connected")
 
     try:
         # Send a connection confirmation
-        await send_message_to_client(websocket, {"type": "connected", "message": "Welcome to the server!"})
+        await send_message_to_client(
+            websocket, {"type": "connected", "message": "Welcome to the server!"}
+        )
 
         async for message in websocket:
             try:
                 data = json.loads(message)
                 print(f"Received from {client_id}: {data}")
                 # Echo the received message (for demonstration)
-                await send_message_to_client(websocket, {"type": "echo", "data": data})
+                # await send_message_to_client(websocket, {"type": "echo", "data": data})
+                state_update = {
+                    "type": "state_update",
+                    "object": "r",
+                    "class": "Robot",
+                    "state": {
+                        "counter": counter, "actuators": {"motor1": counter}
+                    },
+                }
+                await send_message_to_client(websocket, state_update)
+                counter += 1
 
             except json.JSONDecodeError:
                 print(f"Invalid JSON received from {client_id}: {message}")
-                await send_message_to_client(websocket, {"type": "error", "message": "Invalid JSON format"})
+                await send_message_to_client(
+                    websocket, {"type": "error", "message": "Invalid JSON format"}
+                )
 
-    except (websockets.exceptions.ConnectionClosedOK, websockets.exceptions.ConnectionClosedError):
+    except (
+        websockets.exceptions.ConnectionClosedOK,
+        websockets.exceptions.ConnectionClosedError,
+    ):
         print(f"Client {client_id} disconnected")
     except Exception as e:
         print(f"Error handling connection with {client_id}: {e}")
@@ -56,13 +77,20 @@ async def send_periodic_messages():
     while True:
         message = {"type": "heartbeat", "time": time.time()}  # Include timestamp
         await broadcast_message(message)
-        await asyncio.sleep(5)  # Send every 5 seconds (adjust as needed)
+        await asyncio.sleep(10)  # Send every 5 seconds (adjust as needed)
+
+
+counter = 0
 
 
 async def main():
     async with websockets.serve(handler, "localhost", 8765):
         print("WebSocket server started on ws://localhost:8765")
-        await asyncio.gather(send_periodic_messages(), asyncio.Future())  # Run forever
+        tasks = [
+            # send_periodic_messages(),
+            asyncio.Future()
+        ]
+        await asyncio.gather(*tasks)  # Run forever
 
 
 if __name__ == "__main__":

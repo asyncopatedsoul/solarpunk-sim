@@ -1,4 +1,4 @@
-# from robot import Robot
+from robot import Robot
 import time
 
 tracked_vars = {
