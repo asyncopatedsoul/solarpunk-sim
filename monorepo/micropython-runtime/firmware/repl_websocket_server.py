@@ -6,7 +6,7 @@ async def handler(websocket):
     async for message in websocket:
         data = json.loads(message)
         print(f"Received: {data}")
-        await websocket.send(json.dumps({"message": "Hello from the server"}))
+        # await websocket.send(json.dumps({"message": "Hello from the server"}))
 
 async def main():
     async with websockets.serve(handler, "localhost", 8765):
